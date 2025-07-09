@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -23,8 +24,10 @@ const firebaseConfig = {
 // NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 // ...and so on.
 
+
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
+let db: Firestore | null = null;
 
 const firebaseEnabled = !!(firebaseConfig.apiKey && firebaseConfig.projectId);
 
@@ -32,13 +35,15 @@ if (firebaseEnabled) {
   try {
     app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     auth = getAuth(app);
+    db = getFirestore(app);
   } catch (error: any) {
     console.error("Firebase initialization error:", error.message);
     app = null;
     auth = null;
+    db = null;
   }
 } else {
     console.warn("Firebase configuration is missing or incomplete. Authentication features are disabled. Please create and configure your .env.local file.");
 }
 
-export { app, auth, firebaseEnabled };
+export { app, auth, db, firebaseEnabled };
