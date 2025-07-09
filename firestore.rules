@@ -1,27 +1,42 @@
 
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Helper function to check if the user is an admin
     function isAdmin() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    // Cleanse Content: Allow any authenticated user to read all cleanse content.
     match /cleanseContent/{document=**} {
       allow read: if request.auth != null;
     }
 
+    // Users Collection Rules
     match /users/{userId} {
-      allow read: if request.auth.uid == userId || isAdmin();
+      // CREATE: Users can create their own profile document.
       allow create: if request.auth.uid == userId;
-      allow update: if request.auth.uid == userId;
+      
+      // READ/UPDATE (Own data): Users can read and update their own profile.
+      allow get, update: if request.auth.uid == userId;
+      
+      // READ (Admin): Admins can get any individual user profile.
+      allow get: if isAdmin();
+      
+      // LIST (Admin): Admins can list all users for their dashboard.
       allow list: if isAdmin();
     }
 
+    // User Progress Collection Rules
     match /userProgress/{progressId} {
+      // READ: 
+      // - A user can read their own progress (this enforces queries have a `where('userId', '==', uid)` clause).
+      // - An admin can read ANY user's progress.
       allow read: if request.auth.uid == resource.data.userId || isAdmin();
-      allow create, delete: if request.auth.uid == request.resource.data.userId;
+
+      // WRITE: A user can create/update/delete their own progress documents.
+      allow write: if request.auth.uid == request.resource.data.userId;
     }
   }
 }
