@@ -1,27 +1,40 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Rules for the 'users' collection
+
+    // Helper function to check if the requesting user is an admin.
+    // It checks for the existence of the user's document and their role.
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Rules for the 'users' collection.
     match /users/{userId} {
-      // Users can read and update their own profile.
-      // Admins can read, update, and list all user profiles.
-      allow read, update: if request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-      allow list: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-      
-      // Any authenticated user can create their own user document upon sign-up.
-      allow create: if request.auth.uid != null;
+      // Admins can read and update any user document.
+      // Users can only read and update their own document.
+      allow read, update: if request.auth.uid == userId || isAdmin();
+      // Users can only create their own user document upon signup.
+      allow create: if request.auth.uid == userId;
     }
 
-    // Public content that any authenticated user can read.
+    // Rules for the 'cleanseContent' collection.
+    // This content is public to all authenticated users.
     match /cleanseContent/{document=**} {
-      allow read: if request.auth.uid != null;
+      allow read: if request.auth != null;
     }
 
-    // User progress can be created, read, and deleted only by the user who owns it.
+    // Rules for the 'userProgress' collection.
     match /userProgress/{progressId} {
-      allow read, delete: if request.auth.uid == resource.data.userId;
-      allow create: if request.auth.uid == request.resource.data.userId;
+      // Admins can read all progress documents.
+      // Authenticated users can read their own progress documents.
+      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      // Users can create progress documents only for themselves.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      // Users can delete progress documents only for themselves (for un-checking a task).
+      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
     }
   }
 }
