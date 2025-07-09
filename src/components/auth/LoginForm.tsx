@@ -82,6 +82,7 @@ export function LoginForm() {
           await setDoc(userRef, {
             email: userCredential.user.email,
             createdAt: new Date(),
+            role: "user",
           });
         }
         toast({ title: "Success", description: "Your account has been created." });
@@ -128,6 +129,7 @@ export function LoginForm() {
         await setDoc(userRef, {
           email: userCredential.user.email,
           createdAt: new Date(),
+          role: "user",
         }, { merge: true });
       }
       toast({ title: "Success", description: "You've been signed in with Google." });
