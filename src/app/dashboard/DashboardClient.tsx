@@ -12,7 +12,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/Logo";
 import Link from "next/link";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where, addDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface DailyPlan {
   title?: string;
@@ -33,6 +34,7 @@ export function DashboardClient() {
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
   const [breakdownText, setBreakdownText] = useState<string | null>(null);
+  const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
   const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
@@ -42,11 +44,9 @@ export function DashboardClient() {
   }, [user, loading, router]);
 
   useEffect(() => {
-    const fetchDailyData = async () => {
-      if (db === null) {
+    const fetchDataForDay = async () => {
+      if (db === null || !user) {
         setDataLoading(false);
-        setDailyPlan(null);
-        setBreakdownText(null);
         return;
       }
 
@@ -71,6 +71,15 @@ export function DashboardClient() {
         } else {
           setBreakdownText(null);
         }
+        
+        const progressQuery = query(
+          collection(db, "userProgress"),
+          where("userId", "==", user.uid),
+          where("dayNumber", "==", selectedDay)
+        );
+        const progressSnap = await getDocs(progressQuery);
+        const completed = new Set(progressSnap.docs.map(d => d.data().taskName as string));
+        setCompletedTasks(completed);
 
       } catch (error) {
         console.error("Error fetching daily content:", error);
@@ -84,10 +93,10 @@ export function DashboardClient() {
       }
     };
 
-    if (!loading) {
-       fetchDailyData();
+    if (!loading && user) {
+       fetchDataForDay();
     }
-  }, [selectedDay, loading, toast]);
+  }, [selectedDay, user, loading, toast]);
 
 
   const handleSignOut = async () => {
@@ -109,6 +118,52 @@ export function DashboardClient() {
         title: "Sign Out Error",
         description: error.message,
       });
+    }
+  };
+
+  const handleTaskToggle = async (taskName: string, isChecked: boolean) => {
+    if (!user || !db) return;
+
+    if (isChecked) {
+      setCompletedTasks(prev => new Set(prev).add(taskName));
+      try {
+        await addDoc(collection(db, "userProgress"), {
+          userId: user.uid,
+          dayNumber: selectedDay,
+          taskName: taskName,
+          completedAt: serverTimestamp(),
+        });
+      } catch (error) {
+        console.error("Error saving progress: ", error);
+        toast({ variant: "destructive", title: "Error", description: "Could not save your progress." });
+        setCompletedTasks(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(taskName);
+          return newSet;
+        });
+      }
+    } else {
+      setCompletedTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(taskName);
+        return newSet;
+      });
+      try {
+        const q = query(
+          collection(db, "userProgress"),
+          where("userId", "==", user.uid),
+          where("dayNumber", "==", selectedDay),
+          where("taskName", "==", taskName)
+        );
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          deleteDoc(doc.ref);
+        });
+      } catch (error) {
+        console.error("Error removing progress: ", error);
+        toast({ variant: "destructive", title: "Error", description: "Could not update your progress." });
+        setCompletedTasks(prev => new Set(prev).add(taskName));
+      }
     }
   };
   
@@ -210,9 +265,28 @@ export function DashboardClient() {
                         return (
                             <div key={key}>
                                 <h3 className="text-xl font-semibold mb-2">{formatKeyToTitle(key)}</h3>
-                                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                                    {items.map((item, index) => <li key={`${key}-${index}`}>{item}</li>)}
-                                </ul>
+                                <div className="space-y-2">
+                                    {items.map((item, index) => {
+                                        const taskId = `${key}-${index}`;
+                                        return (
+                                            <div key={taskId} className="flex items-center space-x-3">
+                                                <Checkbox
+                                                    id={taskId}
+                                                    checked={completedTasks.has(item)}
+                                                    onCheckedChange={(checked) => handleTaskToggle(item, !!checked)}
+                                                    disabled={dataLoading}
+                                                    aria-label={item}
+                                                />
+                                                <label
+                                                    htmlFor={taskId}
+                                                    className="text-sm font-medium leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                >
+                                                    {item}
+                                                </label>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
                             </div>
                         );
                     }
