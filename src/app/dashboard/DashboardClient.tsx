@@ -15,14 +15,14 @@ import Link from "next/link";
 import { doc, getDoc } from "firebase/firestore";
 
 interface DailyPlan {
-  title: string;
-  morning_routine?: string[];
-  breakfast?: string[];
-  mid_morning?: string[];
-  lunch?: string[];
-  afternoon_snack?: string[];
-  dinner?: string[];
-  evening?: string[];
+  title?: string;
+  morning_routine?: string | string[];
+  breakfast?: string | string[];
+  mid_morning?: string | string[];
+  lunch?: string | string[];
+  afternoon_snack?: string | string[];
+  dinner?: string | string[];
+  evening?: string | string[];
   [key: string]: string | string[] | undefined;
 }
 
@@ -192,13 +192,21 @@ export function DashboardClient() {
       <div className="space-y-6">
         <Card>
             <CardHeader>
-                <CardTitle className="font-headline text-3xl">Day {selectedDay}: {dailyPlan.title}</CardTitle>
+                <CardTitle className="font-headline text-3xl">Day {selectedDay}{dailyPlan.title ? `: ${dailyPlan.title}` : ''}</CardTitle>
                 <CardDescription>Your daily protocol to feel your best.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 pt-6">
                 {protocolKeys.map(key => {
-                    const items = dailyPlan[key];
-                    if (items && Array.isArray(items) && items.length > 0) {
+                    const content = dailyPlan[key];
+                    let items: string[] = [];
+
+                    if (typeof content === 'string' && content.trim() !== '') {
+                        items = content.split(' OR ').map(item => item.trim());
+                    } else if (Array.isArray(content)) {
+                        items = content;
+                    }
+
+                    if (items.length > 0) {
                         return (
                             <div key={key}>
                                 <h3 className="text-xl font-semibold mb-2">{formatKeyToTitle(key)}</h3>
