@@ -318,6 +318,9 @@ export function DashboardClient() {
           <Button variant="outline" asChild>
             <Link href="/shopping-list">Shopping List</Link>
           </Button>
+           <Button variant="outline" asChild>
+            <Link href="/recipes">Recipes</Link>
+          </Button>
           {userProfile?.role === "admin" && (
             <Button variant="outline" asChild>
               <Link href="/admin">Admin Dashboard</Link>
