@@ -171,7 +171,7 @@ export function DashboardClient() {
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl">Content Not Available</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                     <p className="text-muted-foreground">The content for this day could not be loaded. Please try again later.</p>
                 </CardContent>
             </Card>
@@ -185,7 +185,7 @@ export function DashboardClient() {
                 <CardTitle className="font-headline text-3xl">Day {selectedDay}: {dailyPlan.title}</CardTitle>
                 <CardDescription>Your daily protocol to feel your best.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 pt-6">
                 {dailyPlan.morning_routine && Array.isArray(dailyPlan.morning_routine) && dailyPlan.morning_routine.length > 0 && (
                     <div>
                         <h3 className="text-xl font-semibold mb-2">Morning Routine</h3>
@@ -250,7 +250,7 @@ export function DashboardClient() {
                 <CardHeader>
                     <CardTitle className="font-headline text-2xl">What's Happening In Your Body</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                     <p className="text-muted-foreground whitespace-pre-wrap">{breakdownText}</p>
                 </CardContent>
             </Card>
