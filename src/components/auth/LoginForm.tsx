@@ -23,8 +23,8 @@ import { Logo } from "@/components/Logo";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
-import { doc, setDoc } from "firebase/firestore"; // Import Firestore functions
-import { db } from "@/lib/firebase"; // Import db
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -77,31 +77,39 @@ export function LoginForm() {
           values.email,
           (values as z.infer<typeof signupSchema>).password
         );
-        // Create user document in Firestore after successful sign-up
-        if (userCredential.user) {
+        if (userCredential.user && db) {
           const userRef = doc(db, "users", userCredential.user.uid);
           await setDoc(userRef, {
             email: userCredential.user.email,
             createdAt: new Date(),
-          }); // No merge needed for initial creation
+          });
         }
         toast({ title: "Success", description: "Your account has been created." });
         router.push("/dashboard");
       } else if (authAction === "login") {
-        const userCredential: UserCredential = await signInWithEmailAndPassword(
+        await signInWithEmailAndPassword(
           auth,
           values.email,
           (values as z.infer<typeof loginSchema>).password
         );
-        // Update user document in Firestore after successful login (if needed, optional)
-        // You might want to update a "lastLogin" timestamp here.
         toast({ title: "Success", description: "You've been signed in." });
         router.push("/dashboard");
+      } else if (authAction === "reset") {
+        await sendPasswordResetEmail(auth, values.email);
+        toast({
+          title: "Password Reset Email Sent",
+          description: "Check your inbox for a link to reset your password.",
+        });
+        setAuthAction("login");
       }
     } catch (error: any) {
+      const title =
+        authAction === "reset"
+          ? "Password Reset Error"
+          : "Authentication Error";
       toast({
         variant: "destructive",
-        title: "Authentication Error",
+        title: title,
         description: error.message,
       });
     } finally {
@@ -113,15 +121,14 @@ export function LoginForm() {
     if (!auth) return;
     setLoading(true);
     try {
-      const provider = new GoogleAuthProvider(); // Define provider inside the function
+      const provider = new GoogleAuthProvider();
       const userCredential: UserCredential = await signInWithPopup(auth, provider);
-      // Create user document in Firestore after successful sign-in with Google
-      if (userCredential.user) {
+      if (userCredential.user && db) {
         const userRef = doc(db, "users", userCredential.user.uid);
         await setDoc(userRef, {
           email: userCredential.user.email,
           createdAt: new Date(),
-        }, { merge: true }); // Use merge: true to avoid overwriting if the document already exists
+        }, { merge: true });
       }
       toast({ title: "Success", description: "You've been signed in with Google." });
       router.push("/dashboard");
