@@ -186,7 +186,7 @@ export function DashboardClient() {
                 <CardDescription>Your daily protocol to feel your best.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-                {dailyPlan.morning_routine && dailyPlan.morning_routine.length > 0 && (
+                {dailyPlan.morning_routine && Array.isArray(dailyPlan.morning_routine) && dailyPlan.morning_routine.length > 0 && (
                     <div>
                         <h3 className="text-xl font-semibold mb-2">Morning Routine</h3>
                         <ul className="list-disc list-inside space-y-1 text-muted-foreground">
@@ -194,7 +194,7 @@ export function DashboardClient() {
                         </ul>
                     </div>
                 )}
-                {dailyPlan.breakfast && dailyPlan.breakfast.length > 0 && (
+                {dailyPlan.breakfast && Array.isArray(dailyPlan.breakfast) && dailyPlan.breakfast.length > 0 && (
                     <div>
                         <h3 className="text-xl font-semibold mb-2">Breakfast</h3>
                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
@@ -202,7 +202,7 @@ export function DashboardClient() {
                         </ul>
                     </div>
                 )}
-                {dailyPlan.mid_morning && dailyPlan.mid_morning.length > 0 && (
+                {dailyPlan.mid_morning && Array.isArray(dailyPlan.mid_morning) && dailyPlan.mid_morning.length > 0 && (
                      <div>
                         <h3 className="text-xl font-semibold mb-2">Mid-Morning</h3>
                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
@@ -210,7 +210,7 @@ export function DashboardClient() {
                         </ul>
                     </div>
                 )}
-                 {dailyPlan.lunch && dailyPlan.lunch.length > 0 && (
+                 {dailyPlan.lunch && Array.isArray(dailyPlan.lunch) && dailyPlan.lunch.length > 0 && (
                      <div>
                         <h3 className="text-xl font-semibold mb-2">Lunch</h3>
                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
@@ -218,7 +218,7 @@ export function DashboardClient() {
                         </ul>
                     </div>
                 )}
-                 {dailyPlan.afternoon_snack && dailyPlan.afternoon_snack.length > 0 && (
+                 {dailyPlan.afternoon_snack && Array.isArray(dailyPlan.afternoon_snack) && dailyPlan.afternoon_snack.length > 0 && (
                      <div>
                         <h3 className="text-xl font-semibold mb-2">Afternoon Snack</h3>
                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
@@ -226,7 +226,7 @@ export function DashboardClient() {
                         </ul>
                     </div>
                 )}
-                 {dailyPlan.dinner && dailyPlan.dinner.length > 0 && (
+                 {dailyPlan.dinner && Array.isArray(dailyPlan.dinner) && dailyPlan.dinner.length > 0 && (
                      <div>
                         <h3 className="text-xl font-semibold mb-2">Dinner</h3>
                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
@@ -234,7 +234,7 @@ export function DashboardClient() {
                         </ul>
                     </div>
                 )}
-                 {dailyPlan.evening && dailyPlan.evening.length > 0 && (
+                 {dailyPlan.evening && Array.isArray(dailyPlan.evening) && dailyPlan.evening.length > 0 && (
                      <div>
                         <h3 className="text-xl font-semibold mb-2">Evening</h3>
                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
