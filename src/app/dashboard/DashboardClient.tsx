@@ -12,7 +12,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/Logo";
 import Link from "next/link";
-import { differenceInDays } from 'date-fns';
 import { doc, getDoc } from "firebase/firestore";
 
 interface DailyPlan {
@@ -30,7 +29,7 @@ export function DashboardClient() {
   const { user, userProfile, loading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
-  const [dayNumber, setDayNumber] = useState<number | null>(null);
+  const [selectedDay, setSelectedDay] = useState<number>(1);
   const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
   const [breakdownText, setBreakdownText] = useState<string | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
@@ -42,20 +41,8 @@ export function DashboardClient() {
   }, [user, loading, router]);
 
   useEffect(() => {
-    if (userProfile && userProfile.cleanseStartDate) {
-      const cleanseStartDate = userProfile.cleanseStartDate.toDate();
-      const today = new Date();
-      const day = differenceInDays(today, cleanseStartDate) + 1;
-      setDayNumber(day);
-    } else if (!loading) {
-      setDayNumber(null);
-      setDataLoading(false); 
-    }
-  }, [userProfile, loading]);
-
-  useEffect(() => {
     const fetchDailyData = async () => {
-      if (db === null || dayNumber === null || dayNumber < 1 || dayNumber > 9) {
+      if (db === null) {
         setDataLoading(false);
         setDailyPlan(null);
         setBreakdownText(null);
@@ -64,7 +51,7 @@ export function DashboardClient() {
 
       setDataLoading(true);
       try {
-        const dayKey = `day${dayNumber}`;
+        const dayKey = `day${selectedDay}`;
 
         const protocolsRef = doc(db, 'cleanseContent', 'dailyProtocols');
         const protocolsSnap = await getDoc(protocolsRef);
@@ -99,7 +86,7 @@ export function DashboardClient() {
     if (!loading) {
        fetchDailyData();
     }
-  }, [dayNumber, loading, toast]);
+  }, [selectedDay, loading, toast]);
 
 
   const handleSignOut = async () => {
@@ -178,27 +165,14 @@ export function DashboardClient() {
       );
     }
     
-    if (dayNumber === null) {
-      return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline text-3xl">Welcome!</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-muted-foreground">Your cleanse start date has not been set. Please contact an administrator.</p>
-            </CardContent>
-        </Card>
-      );
-    }
-    
-    if (dayNumber < 1 || dayNumber > 9 || !dailyPlan) {
+    if (!dailyPlan) {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-3xl">Cleanse Journey</CardTitle>
+                    <CardTitle className="font-headline text-3xl">Content Not Available</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-muted-foreground">Your cleanse is either complete or has not yet begun. Congratulations on your progress!</p>
+                    <p className="text-muted-foreground">The content for this day could not be loaded. Please try again later.</p>
                 </CardContent>
             </Card>
         )
@@ -208,7 +182,7 @@ export function DashboardClient() {
       <div className="space-y-6">
         <Card>
             <CardHeader>
-                <CardTitle className="font-headline text-3xl">Day {dayNumber}: {dailyPlan.title}</CardTitle>
+                <CardTitle className="font-headline text-3xl">Day {selectedDay}: {dailyPlan.title}</CardTitle>
                 <CardDescription>Your daily protocol to feel your best.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -303,6 +277,18 @@ export function DashboardClient() {
       </header>
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="w-full max-w-4xl mx-auto">
+          <div className="mb-8 p-1 bg-muted rounded-lg flex flex-wrap justify-center gap-1">
+              {Array.from({ length: 9 }, (_, i) => i + 1).map((day) => (
+                <Button
+                  key={day}
+                  variant={selectedDay === day ? "default" : "ghost"}
+                  onClick={() => setSelectedDay(day)}
+                  className="flex-1"
+                >
+                  Day {day}
+                </Button>
+              ))}
+          </div>
           {renderContent()}
         </div>
       </main>
