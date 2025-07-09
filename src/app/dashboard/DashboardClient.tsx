@@ -16,13 +16,14 @@ import { doc, getDoc } from "firebase/firestore";
 
 interface DailyPlan {
   title: string;
-  morning_routine: string[];
-  breakfast: string[];
-  mid_morning: string[];
-  lunch: string[];
-  afternoon_snack: string[];
-  dinner: string[];
-  evening: string[];
+  morning_routine?: string[];
+  breakfast?: string[];
+  mid_morning?: string[];
+  lunch?: string[];
+  afternoon_snack?: string[];
+  dinner?: string[];
+  evening?: string[];
+  [key: string]: string | string[] | undefined;
 }
 
 export function DashboardClient() {
@@ -135,6 +136,13 @@ export function DashboardClient() {
     );
   }
 
+  const formatKeyToTitle = (key: string) => {
+    return key
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   const renderContent = () => {
     if (dataLoading) {
       return (
@@ -178,6 +186,8 @@ export function DashboardClient() {
         )
     }
 
+    const protocolKeys = Object.keys(dailyPlan).filter(key => key !== 'title');
+
     return (
       <div className="space-y-6">
         <Card>
@@ -186,62 +196,20 @@ export function DashboardClient() {
                 <CardDescription>Your daily protocol to feel your best.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 pt-6">
-                {dailyPlan.morning_routine && Array.isArray(dailyPlan.morning_routine) && dailyPlan.morning_routine.length > 0 && (
-                    <div>
-                        <h3 className="text-xl font-semibold mb-2">Morning Routine</h3>
-                        <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                            {dailyPlan.morning_routine.map((item, index) => <li key={`morning-${index}`}>{item}</li>)}
-                        </ul>
-                    </div>
-                )}
-                {dailyPlan.breakfast && Array.isArray(dailyPlan.breakfast) && dailyPlan.breakfast.length > 0 && (
-                    <div>
-                        <h3 className="text-xl font-semibold mb-2">Breakfast</h3>
-                         <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                            {dailyPlan.breakfast.map((item, index) => <li key={`breakfast-${index}`}>{item}</li>)}
-                        </ul>
-                    </div>
-                )}
-                {dailyPlan.mid_morning && Array.isArray(dailyPlan.mid_morning) && dailyPlan.mid_morning.length > 0 && (
-                     <div>
-                        <h3 className="text-xl font-semibold mb-2">Mid-Morning</h3>
-                         <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                            {dailyPlan.mid_morning.map((item, index) => <li key={`mid_morning-${index}`}>{item}</li>)}
-                        </ul>
-                    </div>
-                )}
-                 {dailyPlan.lunch && Array.isArray(dailyPlan.lunch) && dailyPlan.lunch.length > 0 && (
-                     <div>
-                        <h3 className="text-xl font-semibold mb-2">Lunch</h3>
-                         <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                            {dailyPlan.lunch.map((item, index) => <li key={`lunch-${index}`}>{item}</li>)}
-                        </ul>
-                    </div>
-                )}
-                 {dailyPlan.afternoon_snack && Array.isArray(dailyPlan.afternoon_snack) && dailyPlan.afternoon_snack.length > 0 && (
-                     <div>
-                        <h3 className="text-xl font-semibold mb-2">Afternoon Snack</h3>
-                         <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                            {dailyPlan.afternoon_snack.map((item, index) => <li key={`afternoon_snack-${index}`}>{item}</li>)}
-                        </ul>
-                    </div>
-                )}
-                 {dailyPlan.dinner && Array.isArray(dailyPlan.dinner) && dailyPlan.dinner.length > 0 && (
-                     <div>
-                        <h3 className="text-xl font-semibold mb-2">Dinner</h3>
-                         <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                            {dailyPlan.dinner.map((item, index) => <li key={`dinner-${index}`}>{item}</li>)}
-                        </ul>
-                    </div>
-                )}
-                 {dailyPlan.evening && Array.isArray(dailyPlan.evening) && dailyPlan.evening.length > 0 && (
-                     <div>
-                        <h3 className="text-xl font-semibold mb-2">Evening</h3>
-                         <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                            {dailyPlan.evening.map((item, index) => <li key={`evening-${index}`}>{item}</li>)}
-                        </ul>
-                    </div>
-                )}
+                {protocolKeys.map(key => {
+                    const items = dailyPlan[key];
+                    if (items && Array.isArray(items) && items.length > 0) {
+                        return (
+                            <div key={key}>
+                                <h3 className="text-xl font-semibold mb-2">{formatKeyToTitle(key)}</h3>
+                                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                                    {items.map((item, index) => <li key={`${key}-${index}`}>{item}</li>)}
+                                </ul>
+                            </div>
+                        );
+                    }
+                    return null;
+                })}
             </CardContent>
         </Card>
 
