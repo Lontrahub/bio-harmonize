@@ -113,14 +113,16 @@ export function RecipesClient() {
                             <CardTitle className="font-headline text-2xl text-primary">{recipe.title}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div>
-                                <h3 className="text-lg font-semibold mb-2">Ingredients</h3>
-                                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                                    {recipe.ingredients.map((item, itemIndex) => (
-                                        <li key={itemIndex}>{item}</li>
-                                    ))}
-                                </ul>
-                            </div>
+                            {recipe.ingredients && Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 && (
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-2">Ingredients</h3>
+                                    <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                                        {recipe.ingredients.map((item, itemIndex) => (
+                                            <li key={itemIndex}>{item}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                             {recipe.instructions && (
                                 <div>
                                     <Separator className="my-4"/>
