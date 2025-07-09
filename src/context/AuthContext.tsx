@@ -11,6 +11,7 @@ export interface UserProfile {
   displayName: string | null;
   createdAt: any; // Firestore Timestamp
   role: 'user' | 'admin';
+  cleanseStartDate?: any; // Optional: Firestore Timestamp
 }
 
 interface AuthContextType {
