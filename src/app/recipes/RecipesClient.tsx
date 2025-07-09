@@ -15,8 +15,9 @@ import { Separator } from "@/components/ui/separator";
 
 interface Recipe {
   title: string;
-  ingredients: string[];
+  ingredients?: string[];
   instructions?: string;
+  [key: string]: any;
 }
 
 interface RecipesData {
@@ -63,6 +64,15 @@ export function RecipesClient() {
     }
   }, [user]);
 
+  const formatIngredientTitle = (key: string) => {
+    if (key === 'ingredients') return 'Ingredients';
+    if (key.startsWith('blend')) {
+      return `Blend ${key.replace('blend', '')}`;
+    }
+    return key.charAt(0).toUpperCase() + key.slice(1);
+  };
+
+
   if (authLoading || loadingRecipes) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -107,32 +117,46 @@ export function RecipesClient() {
             </Card>
 
             {recipes ? (
-                Object.values(recipes).map((recipe, index) => (
-                    <Card key={index}>
-                        <CardHeader>
-                            <CardTitle className="font-headline text-2xl text-primary">{recipe.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            {recipe.ingredients && Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 && (
-                                <div>
-                                    <h3 className="text-lg font-semibold mb-2">Ingredients</h3>
-                                    <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                                        {recipe.ingredients.map((item, itemIndex) => (
-                                            <li key={itemIndex}>{item}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                            {recipe.instructions && (
-                                <div>
-                                    <Separator className="my-4"/>
-                                    <h3 className="text-lg font-semibold mb-2">Instructions</h3>
-                                    <p className="text-muted-foreground whitespace-pre-wrap">{recipe.instructions}</p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                ))
+                Object.values(recipes).map((recipe, index) => {
+                    const ingredientKeys = Object.keys(recipe).filter(key => key !== 'title' && key !== 'instructions');
+                    return (
+                        <Card key={index}>
+                            <CardHeader>
+                                <CardTitle className="font-headline text-2xl text-primary">{recipe.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                {ingredientKeys.length > 0 && (
+                                    <div className="space-y-4">
+                                        {ingredientKeys.map(key => {
+                                            const items = recipe[key];
+                                            if (Array.isArray(items) && items.length > 0) {
+                                                return (
+                                                    <div key={key}>
+                                                        <h3 className="text-lg font-semibold mb-2">{formatIngredientTitle(key)}</h3>
+                                                        <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                                                            {items.map((item, itemIndex) => (
+                                                                <li key={itemIndex}>{item}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        })}
+                                    </div>
+                                )}
+                                
+                                {recipe.instructions && (
+                                    <div>
+                                        <Separator className="my-4"/>
+                                        <h3 className="text-lg font-semibold mb-2">Instructions</h3>
+                                        <p className="text-muted-foreground whitespace-pre-wrap">{recipe.instructions}</p>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    );
+                })
             ) : (
                 <Card>
                     <CardContent className="pt-6">
