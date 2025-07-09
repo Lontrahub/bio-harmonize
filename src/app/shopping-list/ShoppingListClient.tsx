@@ -74,10 +74,12 @@ export function ShoppingListClient() {
   }, [user]);
 
   useEffect(() => {
-    if (userProfile && userProfile.personalShoppingItems) {
-      setPersonalItems(userProfile.personalShoppingItems);
+    if (userProfile) {
+      setPersonalItems(userProfile.personalShoppingItems || []);
+      setCheckedOfficialItems(new Set(userProfile.officialShoppingItemsChecked || []));
     } else {
       setPersonalItems([]);
+      setCheckedOfficialItems(new Set());
     }
   }, [userProfile]);
 
@@ -89,16 +91,26 @@ export function ShoppingListClient() {
       .join(' ');
   };
 
-  const handleToggleOfficialItem = (item: string) => {
-    setCheckedOfficialItems(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(item)) {
-        newSet.delete(item);
+  const handleToggleOfficialItem = async (item: string) => {
+    if (!user || !db) return;
+
+    const userRef = doc(db, "users", user.uid);
+    const isChecked = checkedOfficialItems.has(item);
+
+    try {
+      if (isChecked) {
+        await updateDoc(userRef, {
+          officialShoppingItemsChecked: arrayRemove(item)
+        });
       } else {
-        newSet.add(item);
+        await updateDoc(userRef, {
+          officialShoppingItemsChecked: arrayUnion(item)
+        });
       }
-      return newSet;
-    });
+    } catch (error) {
+      console.error("Error updating official shopping list:", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not update your shopping list." });
+    }
   };
 
   const handleAddItem = async () => {

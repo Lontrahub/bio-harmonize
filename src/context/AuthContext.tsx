@@ -14,6 +14,7 @@ export interface UserProfile {
   role: 'user' | 'admin';
   cleanseStartDate?: any; // Optional: Firestore Timestamp
   personalShoppingItems?: { text: string; completed: boolean }[];
+  officialShoppingItemsChecked?: string[];
 }
 
 interface AuthContextType {
