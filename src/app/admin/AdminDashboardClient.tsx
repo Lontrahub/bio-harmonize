@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -37,7 +38,10 @@ export function AdminDashboardClient() {
           const usersCollection = collection(db, "users");
           const usersQuery = query(usersCollection);
           const querySnapshot = await getDocs(usersQuery);
-          const usersList = querySnapshot.docs.map(doc => doc.data() as UserProfile);
+          const usersList = querySnapshot.docs.map(doc => ({
+            ...(doc.data()),
+            uid: doc.id
+          }) as UserProfile);
           setUsers(usersList);
         } catch (error) {
           console.error("Error fetching users:", error);
