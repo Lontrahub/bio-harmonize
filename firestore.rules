@@ -1,19 +1,47 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // A user can read, update, and create their own document.
-    // An admin can list and read all user documents.
-    match /users/{userId} {
-      allow read, update: if request.auth != null && (request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
-      allow create: if request.auth != null && request.auth.uid == userId;
-      allow list: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+
+    // Helper function to check if a user has the 'admin' role
+    function isAdmin() {
+      // Ensure the user is authenticated before checking their role.
+      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Authenticated users can read the public cleanse content.
+    // Rules for the 'users' collection
+    match /users/{userId} {
+      // Admins can list all user documents.
+      allow list: if isAdmin();
+      // An authenticated user can get their own document, and admins can get any user document.
+      allow get: if request.auth.uid == userId || isAdmin();
+      // An authenticated user can create their own document (e.g., on sign up).
+      allow create: if request.auth.uid == userId;
+      // An authenticated user can update their own document.
+      allow update: if request.auth.uid == userId;
+      // Nobody is allowed to delete user documents.
+      allow delete: if false;
+    }
+
+    // Rules for the 'cleanseContent' collection
     match /cleanseContent/{document=**} {
+      // Any authenticated user can read the public cleanse content.
       allow read: if request.auth != null;
+    }
+
+    // Rules for the 'userProgress' collection
+    match /userProgress/{progressId} {
+      // Users can query their own progress documents.
+      // This rule relies on the client-side query being correctly filtered with `where('userId', '==', auth.uid)`.
+      allow read: if request.auth != null;
+
+      // Users can create a progress document for themselves.
+      // The `userId` in the new document must match their own UID.
+      allow create: if request.auth.uid == request.resource.data.userId;
+
+      // Users can delete their own progress documents.
+      // The `userId` in the document being deleted must match their own UID.
+      allow delete: if request.auth.uid == resource.data.userId;
     }
   }
 }
