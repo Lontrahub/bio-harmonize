@@ -1,9 +1,10 @@
+
 "use client";
 
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
 export interface UserProfile {
   uid: string;
@@ -12,6 +13,7 @@ export interface UserProfile {
   createdAt: any; // Firestore Timestamp
   role: 'user' | 'admin';
   cleanseStartDate?: any; // Optional: Firestore Timestamp
+  personalShoppingItems?: { text: string; completed: boolean }[];
 }
 
 interface AuthContextType {
@@ -33,24 +35,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const authUnsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
         const userDocRef = doc(db, "users", user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-          setUserProfile(userDocSnap.data() as UserProfile);
-        } else {
+        // Use onSnapshot to listen for real-time updates to the user profile
+        const unsub = onSnapshot(userDocRef, (docSnap) => {
+          if (docSnap.exists()) {
+            setUserProfile(docSnap.data() as UserProfile);
+          } else {
+            setUserProfile(null);
+          }
+          setLoading(false);
+        }, (error) => {
+          console.error("Error fetching user profile:", error);
           setUserProfile(null);
-        }
+          setLoading(false);
+        });
+        
+        // Return the onSnapshot listener's unsubscribe function
+        // It will be called when the user logs out.
+        return unsub;
+
       } else {
         setUser(null);
         setUserProfile(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => authUnsubscribe();
   }, []);
 
   return (
