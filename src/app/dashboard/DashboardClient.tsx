@@ -315,6 +315,9 @@ export function DashboardClient() {
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Logo />
         <div className="flex items-center gap-2">
+          <Button variant="outline" asChild>
+            <Link href="/shopping-list">Shopping List</Link>
+          </Button>
           {userProfile?.role === "admin" && (
             <Button variant="outline" asChild>
               <Link href="/admin">Admin Dashboard</Link>
