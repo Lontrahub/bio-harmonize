@@ -10,9 +10,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/Logo";
+import Link from "next/link";
 
 export function DashboardClient() {
-  const { user, loading } = useAuth();
+  const { user, userProfile, loading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -73,9 +74,16 @@ export function DashboardClient() {
     <div className="flex flex-col min-h-screen">
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Logo />
-        <Button variant="outline" onClick={handleSignOut}>
-          Sign Out
-        </Button>
+        <div className="flex items-center gap-2">
+          {userProfile?.role === "admin" && (
+            <Button variant="outline" asChild>
+              <Link href="/admin">Admin Dashboard</Link>
+            </Button>
+          )}
+          <Button variant="outline" onClick={handleSignOut}>
+            Sign Out
+          </Button>
+        </div>
       </header>
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="w-full max-w-2xl mx-auto">

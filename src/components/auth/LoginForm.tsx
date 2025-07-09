@@ -13,7 +13,7 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
- sendPasswordResetEmail,
+  sendPasswordResetEmail,
   UserCredential,
 } from "firebase/auth";
 import { auth, firebaseEnabled } from "@/lib/firebase";
@@ -23,7 +23,7 @@ import { Logo } from "@/components/Logo";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 const loginSchema = z.object({
@@ -77,10 +77,13 @@ export function LoginForm() {
           values.email,
           (values as z.infer<typeof signupSchema>).password
         );
-        if (userCredential.user && db) {
-          const userRef = doc(db, "users", userCredential.user.uid);
+        const user = userCredential.user;
+        if (user && db) {
+          const userRef = doc(db, "users", user.uid);
           await setDoc(userRef, {
-            email: userCredential.user.email,
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
             createdAt: new Date(),
             role: "user",
           });
@@ -119,18 +122,31 @@ export function LoginForm() {
   };
 
   const handleGoogleSignIn = async () => {
-    if (!auth) return;
+    if (!auth || !db) return;
     setLoading(true);
     try {
       const provider = new GoogleAuthProvider();
       const userCredential: UserCredential = await signInWithPopup(auth, provider);
-      if (userCredential.user && db) {
-        const userRef = doc(db, "users", userCredential.user.uid);
-        await setDoc(userRef, {
-          email: userCredential.user.email,
-          createdAt: new Date(),
-          role: "user",
-        }, { merge: true });
+      const user = userCredential.user;
+      if (user) {
+        const userRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(userRef);
+
+        if (!docSnap.exists()) {
+          // If the user document doesn't exist, create it with the 'user' role.
+          await setDoc(userRef, {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            createdAt: new Date(),
+            role: "user",
+          });
+        } else {
+           // If it exists, merge the data to update displayName without overwriting the role.
+           await setDoc(userRef, {
+              displayName: user.displayName,
+           }, { merge: true });
+        }
       }
       toast({ title: "Success", description: "You've been signed in with Google." });
       router.push("/dashboard");
