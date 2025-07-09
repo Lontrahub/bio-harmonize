@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -15,6 +16,7 @@ import {
   signInWithPopup,
   sendPasswordResetEmail,
   UserCredential,
+  updateProfile,
 } from "firebase/auth";
 import { auth, firebaseEnabled } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +34,7 @@ const loginSchema = z.object({
 });
 
 const signupSchema = z.object({
+  fullName: z.string().min(1, { message: "Full Name is required." }),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
@@ -59,31 +62,35 @@ export function LoginForm() {
 
   const currentSchema = authAction === "login" ? loginSchema : authAction === "signup" ? signupSchema : resetSchema;
 
-  const form = useForm<z.infer<typeof currentSchema>>({
+  const form = useForm({
     resolver: zodResolver(currentSchema),
     defaultValues: {
+      fullName: "",
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof currentSchema>) => {
+  const onSubmit = async (values: z.infer<typeof signupSchema | typeof loginSchema>) => {
     if (!auth) return;
     setLoading(true);
     try {
       if (authAction === "signup") {
         const userCredential: UserCredential = await createUserWithEmailAndPassword(
           auth,
-          values.email,
-          (values as z.infer<typeof signupSchema>).password
+          values.email!,
+          values.password!
         );
         const user = userCredential.user;
+        await updateProfile(user, {
+          displayName: values.fullName,
+        });
         if (user && db) {
           const userRef = doc(db, "users", user.uid);
           await setDoc(userRef, {
             uid: user.uid,
             email: user.email,
-            displayName: user.displayName,
+            displayName: values.fullName,
             createdAt: new Date(),
             role: "user",
           });
@@ -93,13 +100,13 @@ export function LoginForm() {
       } else if (authAction === "login") {
         await signInWithEmailAndPassword(
           auth,
-          values.email,
-          (values as z.infer<typeof loginSchema>).password
+          values.email!,
+          values.password!
         );
         toast({ title: "Success", description: "You've been signed in." });
         router.push("/dashboard");
       } else if (authAction === "reset") {
-        await sendPasswordResetEmail(auth, values.email);
+        await sendPasswordResetEmail(auth, values.email!);
         toast({
           title: "Password Reset Email Sent",
           description: "Check your inbox for a link to reset your password.",
@@ -205,6 +212,21 @@ export function LoginForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <fieldset disabled={!firebaseEnabled || loading} className="space-y-4">
+              {authAction === "signup" && (
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
                 name="email"
@@ -288,3 +310,4 @@ export function LoginForm() {
     </Card>
   );
 }
+
