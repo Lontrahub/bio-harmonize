@@ -1,42 +1,46 @@
 
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check if the user is an admin
+    // ===== Helper Functions =====
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+
     function isAdmin() {
+      // This requires that the user making the request has read access to their own user document
+      // to verify their 'admin' role.
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Cleanse Content: Allow any authenticated user to read all cleanse content.
-    match /cleanseContent/{document=**} {
-      allow read: if request.auth != null;
-    }
-
-    // Users Collection Rules
+    // ===== Collection: users =====
     match /users/{userId} {
-      // CREATE: Users can create their own profile document.
-      allow create: if request.auth.uid == userId;
+      // Users can create, read, and update their own profile.
+      // Admins can read/update any profile.
+      allow read, update, create: if isOwner(userId) || isAdmin();
       
-      // READ/UPDATE (Own data): Users can read and update their own profile.
-      allow get, update: if request.auth.uid == userId;
-      
-      // READ (Admin): Admins can get any individual user profile.
-      allow get: if isAdmin();
-      
-      // LIST (Admin): Admins can list all users for their dashboard.
+      // Only admins can list all users.
       allow list: if isAdmin();
     }
 
-    // User Progress Collection Rules
+    // ===== Collection: cleanseContent =====
+    match /cleanseContent/{docId} {
+      // Any authenticated user can read the public cleanse content.
+      allow read: if request.auth != null;
+    }
+    
+    // ===== Collection: userProgress =====
     match /userProgress/{progressId} {
-      // READ: 
-      // - A user can read their own progress (this enforces queries have a `where('userId', '==', uid)` clause).
-      // - An admin can read ANY user's progress.
-      allow read: if request.auth.uid == resource.data.userId || isAdmin();
-
-      // WRITE: A user can create/update/delete their own progress documents.
-      allow write: if request.auth.uid == request.resource.data.userId;
+      // Users can create their own progress documents.
+      allow create: if isOwner(request.resource.data.userId);
+      
+      // Users can read/delete their own progress. Admins can also read any progress document.
+      allow read, delete: if isOwner(resource.data.userId) || isAdmin();
+      
+      // Only admins can list progress (for querying across users).
+      allow list: if isAdmin();
     }
   }
 }
