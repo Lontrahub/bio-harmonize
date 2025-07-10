@@ -20,7 +20,7 @@ export default function Home() {
         </nav>
       </header>
       <main className="flex-grow">
-        <section className="relative w-full py-20 md:py-32 lg:py-48 flex items-center justify-center text-center bg-background">
+        <section className="relative w-full py-20 md:py-32 lg:py-48 flex items-center justify-center text-center bg-background animated-gradient">
           <div className="container px-4 md:px-6">
             <div className="max-w-3xl mx-auto space-y-4">
               <h1 className="text-4xl font-headline font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground">

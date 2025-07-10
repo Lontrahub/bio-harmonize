@@ -84,3 +84,29 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .animated-gradient {
+    background-size: 200% 200%;
+    background-image: linear-gradient(
+      -45deg,
+      hsl(var(--background)),
+      hsl(var(--primary) / 0.2),
+      hsl(var(--accent) / 0.2),
+      hsl(var(--background))
+    );
+    animation: gradient-move 15s ease infinite;
+  }
+}
+
+@keyframes gradient-move {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
