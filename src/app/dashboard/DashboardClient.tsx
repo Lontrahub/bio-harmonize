@@ -27,6 +27,11 @@ interface DailyPlan {
   [key: string]: string | string[] | undefined;
 }
 
+interface DailyTips {
+  preparation: string[];
+  winterComfort: string[];
+}
+
 export function DashboardClient() {
   const { user, userProfile, loading } = useAuth();
   const router = useRouter();
@@ -34,6 +39,7 @@ export function DashboardClient() {
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
   const [breakdownText, setBreakdownText] = useState<string | null>(null);
+  const [dailyTips, setDailyTips] = useState<DailyTips | null>(null);
   const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
   const [dataLoading, setDataLoading] = useState(true);
 
@@ -70,6 +76,14 @@ export function DashboardClient() {
           setBreakdownText(data[dayKey]);
         } else {
           setBreakdownText(null);
+        }
+
+        const tipsRef = doc(db, 'cleanseContent', 'dailyTips');
+        const tipsSnap = await getDoc(tipsRef);
+        if (tipsSnap.exists()) {
+          setDailyTips(tipsSnap.data() as DailyTips);
+        } else {
+          setDailyTips(null);
         }
         
         const progressQuery = query(
@@ -224,6 +238,19 @@ export function DashboardClient() {
                     <Skeleton className="h-24 w-full" />
                 </CardContent>
             </Card>
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-8 w-1/2" />
+                </CardHeader>
+                <CardContent className="pt-6 space-y-4">
+                    <Skeleton className="h-6 w-1/3" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-6 w-1/3 mt-4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                </CardContent>
+            </Card>
         </div>
       );
     }
@@ -302,6 +329,36 @@ export function DashboardClient() {
                 </CardHeader>
                 <CardContent className="pt-6">
                     <p className="text-muted-foreground whitespace-pre-wrap">{breakdownText}</p>
+                </CardContent>
+            </Card>
+        )}
+
+        {dailyTips && (
+             <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-2xl">Daily Tips for Success</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6 space-y-6">
+                    {dailyTips.preparation && dailyTips.preparation.length > 0 && (
+                        <div>
+                            <h3 className="text-xl font-semibold mb-2">Preparation</h3>
+                            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                                {dailyTips.preparation.map((tip, index) => (
+                                    <li key={`prep-${index}`}>{tip}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                    {dailyTips.winterComfort && dailyTips.winterComfort.length > 0 && (
+                        <div>
+                            <h3 className="text-xl font-semibold mb-2">Winter Comfort</h3>
+                            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                                {dailyTips.winterComfort.map((tip, index) => (
+                                    <li key={`comfort-${index}`}>{tip}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         )}
