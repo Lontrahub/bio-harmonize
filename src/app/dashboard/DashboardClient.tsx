@@ -183,7 +183,7 @@ export function DashboardClient() {
   
   if (loading || !user) {
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col flex-1">
             <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
                <Logo />
                 <Skeleton className="h-8 w-24" />
@@ -368,7 +368,7 @@ export function DashboardClient() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col flex-1">
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Logo />
         <div className="flex items-center gap-2">

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
+import { Footer } from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'Bio-Harmonize',
@@ -20,10 +21,13 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased">
+      <body className="font-body antialiased bg-background">
         <AuthProvider>
-          {children}
-          <Toaster />
+            <div className="flex flex-col min-h-screen">
+                {children}
+                <Footer />
+            </div>
+            <Toaster />
         </AuthProvider>
       </body>
     </html>

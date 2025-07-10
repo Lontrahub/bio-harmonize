@@ -173,7 +173,7 @@ export function AdminDashboardClient() {
 
   if (loading || !userProfile || userProfile.role !== 'admin') {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col flex-1">
         <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <Logo />
         </header>
@@ -199,7 +199,7 @@ export function AdminDashboardClient() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col flex-1">
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Logo />
         <nav className="flex items-center gap-4">

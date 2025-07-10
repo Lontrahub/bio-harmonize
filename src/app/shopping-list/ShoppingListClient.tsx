@@ -163,7 +163,7 @@ export function ShoppingListClient() {
 
   if (authLoading || loadingList) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col flex-1">
         <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <Logo />
           <Skeleton className="h-8 w-32" />
@@ -188,7 +188,7 @@ export function ShoppingListClient() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col flex-1">
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Logo />
         <Button variant="outline" asChild>

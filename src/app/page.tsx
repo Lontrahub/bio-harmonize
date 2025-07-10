@@ -6,7 +6,7 @@ import { Logo } from "@/components/Logo";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col flex-1">
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Logo />
         <nav className="flex items-center gap-4">
@@ -81,11 +81,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="w-full py-6 bg-background">
-        <div className="container mx-auto px-4 md:px-6 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Bio-Harmonize. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 }
