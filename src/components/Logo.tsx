@@ -14,7 +14,6 @@ export function Logo({ className }: { className?: string }) {
         height={35}
         className="h-[35px] w-[35px] rounded-[4px] object-contain"
       />
-      <span className="text-xl font-semibold font-headline text-foreground">Bio-Harmonize</span>
     </div>
   );
 }
