@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MountainSnow, Feather } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
           <Button asChild>
             <Link href="/login">Sign Up</Link>
           </Button>
+          <ThemeToggle />
         </nav>
       </header>
       <main className="flex-grow">

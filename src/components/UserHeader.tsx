@@ -16,6 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function UserHeader() {
     const { userProfile } = useAuth();
@@ -90,6 +91,7 @@ export function UserHeader() {
                     <TooltipContent><p>Admin Dashboard</p></TooltipContent>
                     </Tooltip>
                 )}
+                <ThemeToggle />
                 <Tooltip>
                     <TooltipTrigger asChild>
                     <Button variant="outline" size="icon" onClick={handleSignOut} aria-label="Sign Out">
