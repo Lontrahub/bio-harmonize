@@ -13,6 +13,7 @@ import { Logo } from "@/components/Logo";
 import { collection, doc, getDoc, getDocs, query, where, addDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserHeader } from "@/components/UserHeader";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface DailyPlan {
   title?: string;
@@ -348,17 +349,22 @@ export function DashboardClient() {
       <UserHeader />
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="w-full max-w-4xl mx-auto">
-          <div className="mb-8 p-1 bg-muted rounded-lg flex flex-wrap justify-center gap-1">
-              {Array.from({ length: 9 }, (_, i) => i + 1).map((day) => (
-                <Button
-                  key={day}
-                  variant={selectedDay === day ? "default" : "ghost"}
-                  onClick={() => setSelectedDay(day)}
-                  className="flex-1"
-                >
-                  Day {day}
-                </Button>
-              ))}
+           <div className="mb-8 flex justify-center">
+            <ScrollArea className="whitespace-nowrap">
+              <div className="p-1 bg-muted rounded-lg flex w-max gap-1">
+                {Array.from({ length: 9 }, (_, i) => i + 1).map((day) => (
+                  <Button
+                    key={day}
+                    variant={selectedDay === day ? "default" : "ghost"}
+                    onClick={() => setSelectedDay(day)}
+                    className="shrink-0"
+                  >
+                    Day {day}
+                  </Button>
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </div>
           {renderContent()}
         </div>
