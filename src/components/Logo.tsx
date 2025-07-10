@@ -14,26 +14,30 @@ export function Logo({ className }: { className?: string }) {
     setMounted(true);
   }, []);
 
-  // This will use /logo-light.png on dark mode, and /logo-dark.png on light mode.
-  // Make sure these files are located in your /public folder at the root of the project.
   const logoSrc = resolvedTheme === 'dark' ? '/logo-light.png' : '/logo-dark.png';
+  const [currentSrc, setCurrentSrc] = useState(logoSrc);
+
+  useEffect(() => {
+    // When the theme changes, this ensures we try to load the correct logo again.
+    setCurrentSrc(logoSrc);
+  }, [logoSrc]);
+
 
   return (
     <div className={cn("flex items-center justify-center gap-2", className)}>
-      {/* 
-        This component switches between your logo-light.png and logo-dark.png files.
-        It waits for the theme to load on the client to prevent a flash of the wrong logo.
-      */}
       {mounted ? (
         <Image
-          src={logoSrc}
+          src={currentSrc}
           alt="Bio-Harmonize Logo"
-          // IMPORTANT: You may need to adjust the width and height below
-          // to match the aspect ratio of your logo files for best results.
           width={112} 
           height={32}
           className="h-8 w-auto object-contain"
           priority
+          onError={() => {
+            // This fallback helps diagnose if the image files are missing or named incorrectly.
+            // If you see a placeholder, please check your /public folder.
+            setCurrentSrc(`https://placehold.co/112x32.png`);
+          }}
         />
       ) : (
         // Render a placeholder to prevent layout shift while the theme is loading
