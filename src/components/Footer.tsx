@@ -30,9 +30,9 @@ export function Footer() {
 
         </div>
         
-        <div className="border-t mt-6 pt-4 text-center text-xs space-y-2">
-           <p>&copy; {new Date().getFullYear()} Bio-Harmonize. All rights reserved.</p>
-           <p>
+        <div className="border-t mt-6 pt-4 text-xs flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
+           <p className="text-center sm:text-left">&copy; {new Date().getFullYear()} Bio-Harmonize. All rights reserved.</p>
+           <p className="text-center sm:text-right">
              Developed by <a href="https://www.digital-alignment.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary underline">digital-alignment.com</a>
            </p>
         </div>
