@@ -23,7 +23,7 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="max-w-3xl mx-auto space-y-4">
               <h1 className="text-4xl font-headline font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground">
-                Welcome to AuthZenith
+                Welcome to Bio-Harmonize
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground">
                 Your clean and simple solution for modern authentication. Secure, elegant, and ready to deploy.
@@ -83,7 +83,7 @@ export default function Home() {
       </main>
       <footer className="w-full py-6 bg-background">
         <div className="container mx-auto px-4 md:px-6 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} AuthZenith. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Bio-Harmonize. All rights reserved.</p>
         </div>
       </footer>
     </div>
