@@ -5,15 +5,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { auth, db } from "@/lib/firebase";
-import { signOut } from "firebase/auth";
+import { db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/Logo";
-import Link from "next/link";
 import { collection, doc, getDoc, getDocs, query, where, addDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { Checkbox } from "@/components/ui/checkbox";
+import { UserHeader } from "@/components/UserHeader";
 
 interface DailyPlan {
   title?: string;
@@ -111,29 +110,6 @@ export function DashboardClient() {
        fetchDataForDay();
     }
   }, [selectedDay, user, loading, toast]);
-
-
-  const handleSignOut = async () => {
-    if (!auth) {
-      toast({
-        variant: "destructive",
-        title: "Sign Out Error",
-        description: "Firebase is not configured.",
-      });
-      return;
-    }
-    try {
-      await signOut(auth);
-      toast({ title: "Signed Out", description: "You have been successfully signed out." });
-      router.push("/login");
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Sign Out Error",
-        description: error.message,
-      });
-    }
-  };
 
   const handleTaskToggle = async (taskName: string, isChecked: boolean) => {
     if (!user || !db) return;
@@ -369,28 +345,7 @@ export function DashboardClient() {
 
   return (
     <div className="flex flex-col flex-1">
-      <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <Logo />
-        <div className="flex items-center gap-2">
-          <Button variant="outline" asChild>
-            <Link href="/shopping-list">Shopping List</Link>
-          </Button>
-           <Button variant="outline" asChild>
-            <Link href="/recipes">Recipes</Link>
-          </Button>
-           <Button variant="outline" asChild>
-            <Link href="/resources">Resources</Link>
-          </Button>
-          {userProfile?.role === "admin" && (
-            <Button variant="outline" asChild>
-              <Link href="/admin">Admin Dashboard</Link>
-            </Button>
-          )}
-          <Button variant="outline" onClick={handleSignOut}>
-            Sign Out
-          </Button>
-        </div>
-      </header>
+      <UserHeader />
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="w-full max-w-4xl mx-auto">
           <div className="mb-8 p-1 bg-muted rounded-lg flex flex-wrap justify-center gap-1">

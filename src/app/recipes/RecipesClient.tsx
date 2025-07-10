@@ -2,16 +2,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/Logo";
 import { Separator } from "@/components/ui/separator";
+import { UserHeader } from "@/components/UserHeader";
 
 interface Recipe {
   title: string;
@@ -101,12 +100,7 @@ export function RecipesClient() {
 
   return (
     <div className="flex flex-col flex-1">
-      <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <Logo />
-        <Button variant="outline" asChild>
-          <Link href="/dashboard">Back to Dashboard</Link>
-        </Button>
-      </header>
+      <UserHeader />
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="w-full max-w-4xl mx-auto space-y-8">
             <Card>
