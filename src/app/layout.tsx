@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
-import { Toaster } from '@/components/ui/toaster';
-import { Footer } from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { AppShell } from '@/components/AppShell';
 
 export const metadata: Metadata = {
   title: 'Bio-Harmonize',
@@ -30,11 +29,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-              <div className="flex flex-col min-h-screen">
-                  {children}
-                  <Footer />
-              </div>
-              <Toaster />
+            <AppShell>
+              {children}
+            </AppShell>
           </AuthProvider>
         </ThemeProvider>
       </body>
