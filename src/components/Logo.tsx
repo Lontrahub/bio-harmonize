@@ -1,3 +1,4 @@
+
 "use client";
 
 import { cn } from '@/lib/utils';
@@ -7,7 +8,7 @@ export function Logo({ className }: { className?: string }) {
     <div className={cn("flex items-center justify-center gap-2", className)}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/logo-dark.png"
+        src="/logo.jpg"
         alt="Bio-Harmonize Logo"
         width={32}
         height={32}
