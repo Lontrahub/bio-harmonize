@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { cn } from '@/lib/utils';
@@ -12,21 +11,20 @@ export function Logo({ className }: { className?: string }) {
       <img
         src="/logo-light.png"
         alt="Bio-Harmonize Logo"
-        width={112}
+        width={32}
         height={32}
-        className="hidden h-8 w-auto object-contain dark:block"
+        className="hidden h-8 w-8 object-contain dark:block"
       />
       {/* Dark version of logo, shown on light backgrounds */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/logo-dark.png"
         alt="Bio-Harmonize Logo"
-        width={112}
+        width={32}
         height={32}
-        className="block h-8 w-auto object-contain dark:hidden"
+        className="block h-8 w-8 object-contain dark:hidden"
       />
       <span className="text-xl font-semibold font-headline text-foreground">Bio-Harmonize</span>
     </div>
   );
 }
-
