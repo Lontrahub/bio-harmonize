@@ -39,7 +39,7 @@ export function InteractiveHero() {
           border-radius: 50%;
           transform: translate(-50%, -50%);
           animation: ripple-animation 1.5s ease-out forwards;
-          background-color: hsla(var(--primary) / 0.1);
+          background-color: hsla(var(--primary) / 0.05);
           pointer-events: none;
         }
 
