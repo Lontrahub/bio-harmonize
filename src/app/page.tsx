@@ -1,7 +1,6 @@
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Leaf, Feather } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -28,57 +27,11 @@ export default function Home() {
                 Welcome to Bio-Harmonize
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground">
-                Your clean and simple solution for modern authentication. Secure, elegant, and ready to deploy.
+              Your 9-Day Winter Cleanse Companion.
               </p>
               <Button size="lg" asChild>
                 <Link href="/login">Get Started</Link>
               </Button>
-            </div>
-          </div>
-        </section>
-
-        <section className="w-full py-16 md:py-24 bg-secondary">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="grid gap-8 md:grid-cols-3">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 font-headline">
-                    <Feather className="h-6 w-6 text-primary" />
-                    Simple & Elegant
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    A minimalist interface that is easy to use and beautiful to look at.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 font-headline">
-                    <Leaf className="h-6 w-6 text-primary" />
-                    Robust Security
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Powered by Firebase for secure, reliable, and scalable authentication.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 font-headline">
-                    <Feather className="h-6 w-6 text-primary" />
-                    Developer Friendly
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Clean, modern code built with Next.js and ShadCN for easy customization.
-                  </p>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </section>
