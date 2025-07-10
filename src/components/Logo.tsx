@@ -14,23 +14,26 @@ export function Logo({ className }: { className?: string }) {
     setMounted(true);
   }, []);
 
-  // Determine the correct logo source based on the theme
-  const logoSrc = resolvedTheme === 'dark' ? '/logo-light.png' : '/logo-dark.png';
+  // Using a placeholder image until the final assets are ready.
+  // The next.config.ts is already configured for `placehold.co`.
+  const logoSrc = 'https://placehold.co/112x112.png';
 
   return (
     <div className={cn("flex items-center justify-center gap-2", className)}>
       {/* 
-        This component now loads a PNG logo from your `/public` folder.
-        It expects to find `/public/logo-light.png` and `/public/logo-dark.png`.
+        This component now loads a placeholder image. 
+        When you're ready, you can add your `logo-light.png` and `logo-dark.png`
+        to the `/public` folder and we can switch back to using those.
       */}
       {mounted ? (
         <Image
           src={logoSrc}
           alt="Bio-Harmonize Logo"
-          width={28}
-          height={28}
+          width={112}
+          height={112}
           className="h-7 w-7 object-contain"
           priority
+          data-ai-hint="logo"
         />
       ) : (
         // Render a placeholder to prevent layout shift while the theme is loading
