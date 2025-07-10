@@ -17,7 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ThemeToggle } from "./ThemeToggle";
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export function UserHeader() {
     const { userProfile } = useAuth();
@@ -91,11 +91,12 @@ export function UserHeader() {
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="flex w-full max-w-xs flex-col p-0">
-                        <div className="border-b p-4">
+                        <SheetHeader className="border-b p-4">
+                           <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                            <SheetClose asChild>
                                 <Link href="/dashboard"><Logo /></Link>
                            </SheetClose>
-                        </div>
+                        </SheetHeader>
                         <nav className="flex-1 space-y-1 p-4">
                             {navItems.filter(item => !item.adminOnly || userProfile?.role === 'admin').map(item => (
                                 <SheetClose asChild key={item.href}>
