@@ -1,3 +1,4 @@
+
 "use client";
 
 import { cn } from '@/lib/utils';
@@ -9,9 +10,9 @@ export function Logo({ className }: { className?: string }) {
       <img
         src="/logo.jpg"
         alt="Bio-Harmonize Logo"
-        width={32}
-        height={32}
-        className="h-8 w-8 object-contain"
+        width={35}
+        height={35}
+        className="h-[35px] w-[35px] rounded-[4px] object-contain"
       />
       <span className="text-xl font-semibold font-headline text-foreground">Bio-Harmonize</span>
     </div>
