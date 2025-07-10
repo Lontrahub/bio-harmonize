@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { MountainSnow, Feather } from "lucide-react";
+import { Leaf, Feather } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -56,7 +56,7 @@ export default function Home() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 font-headline">
-                    <MountainSnow className="h-6 w-6 text-primary" />
+                    <Leaf className="h-6 w-6 text-primary" />
                     Robust Security
                   </CardTitle>
                 </CardHeader>
