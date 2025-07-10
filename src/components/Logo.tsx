@@ -1,25 +1,41 @@
+
+"use client";
+
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 export function Logo({ className }: { className?: string }) {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Determine the correct logo source based on the theme
+  const logoSrc = resolvedTheme === 'dark' ? '/logo-light.png' : '/logo-dark.png';
+
   return (
     <div className={cn("flex items-center justify-center gap-2", className)}>
       {/* 
-        To use your own logo, replace this <svg> element with your SVG code.
-        The `className` handles the size and color automatically.
+        This component now loads a PNG logo from your `/public` folder.
+        It expects to find `/public/logo-light.png` and `/public/logo-dark.png`.
       */}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="h-7 w-7 text-primary"
-      >
-        <path d="M11 20A7 7 0 0 1 4 13H2a9 9 0 0 0 18 0h-2a7 7 0 0 1-7 7Z" />
-        <path d="M12 12A4.95 4.95 0 0 0 7 7a5 5 0 0 1 10 0 4.95 4.95 0 0 0-5 5Z" />
-      </svg>
+      {mounted ? (
+        <Image
+          src={logoSrc}
+          alt="Bio-Harmonize Logo"
+          width={28}
+          height={28}
+          className="h-7 w-7 object-contain"
+          priority
+        />
+      ) : (
+        // Render a placeholder to prevent layout shift while the theme is loading
+        <div className="h-7 w-7" />
+      )}
       <span className="text-xl font-semibold font-headline text-foreground">Bio-Harmonize</span>
     </div>
   );
