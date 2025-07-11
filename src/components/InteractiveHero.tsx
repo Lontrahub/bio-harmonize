@@ -67,7 +67,8 @@ export function InteractiveHero() {
       <div className="container px-4 md:px-6 z-10">
         <div className="max-w-3xl mx-auto space-y-4">
           <h1 className="text-4xl font-headline font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground">
-            Welcome to Bio-Harmonize
+            <span className="block text-2xl sm:text-3xl md:text-4xl font-light text-muted-foreground">Welcome to</span>
+            Bio-Harmonize
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground">
             Your 9-Day Winter Cleanse Companion.
