@@ -38,8 +38,8 @@ export function InteractiveHero() {
           position: absolute;
           border-radius: 50%;
           transform: translate(-50%, -50%);
-          animation: ripple-animation 1.5s ease-out forwards;
-          background-color: hsla(var(--primary) / 0.05);
+          animation: ripple-animation 2s ease-out forwards;
+          background-color: hsla(var(--primary) / 0.04);
           pointer-events: none;
         }
 
@@ -49,7 +49,7 @@ export function InteractiveHero() {
             opacity: 1;
           }
           to {
-            transform: translate(-50%, -50%) scale(4);
+            transform: translate(-50%, -50%) scale(5);
             opacity: 0;
           }
         }
