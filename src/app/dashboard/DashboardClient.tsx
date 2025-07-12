@@ -248,98 +248,103 @@ export function DashboardClient() {
     const protocolKeys = Object.keys(dailyPlan).filter(key => key !== 'title');
 
     return (
-      <div className="space-y-6">
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline text-3xl">Day {selectedDay}{dailyPlan.title ? `: ${dailyPlan.title}` : ''}</CardTitle>
-                <CardDescription>Your daily protocol to feel your best.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 pt-6">
-                {protocolKeys.map(key => {
-                    const content = dailyPlan[key];
-                    let items: string[] = [];
+      <div className="flex flex-col lg:flex-row lg:gap-8">
+        {/* Left Column: Main Protocol */}
+        <div className="lg:w-1/2 flex-shrink-0">
+           <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-3xl">Day {selectedDay}{dailyPlan.title ? `: ${dailyPlan.title}` : ''}</CardTitle>
+                    <CardDescription>Your daily protocol to feel your best.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6 pt-6">
+                    {protocolKeys.map(key => {
+                        const content = dailyPlan[key];
+                        let items: string[] = [];
 
-                    if (typeof content === 'string' && content.trim() !== '') {
-                        items = content.split(' OR ').map(item => item.trim());
-                    } else if (Array.isArray(content)) {
-                        items = content;
-                    }
+                        if (typeof content === 'string' && content.trim() !== '') {
+                            items = content.split(' OR ').map(item => item.trim());
+                        } else if (Array.isArray(content)) {
+                            items = content;
+                        }
 
-                    if (items.length > 0) {
-                        return (
-                            <div key={key}>
-                                <h3 className="text-xl font-semibold mb-2">{formatKeyToTitle(key)}</h3>
-                                <div className="space-y-2">
-                                    {items.map((item, index) => {
-                                        const taskId = `${key}-${index}`;
-                                        return (
-                                            <div key={taskId} className="flex items-center space-x-3">
-                                                <Checkbox
-                                                    id={taskId}
-                                                    checked={completedTasks.has(item)}
-                                                    onCheckedChange={(checked) => handleTaskToggle(item, !!checked)}
-                                                    disabled={dataLoading}
-                                                    aria-label={item}
-                                                />
-                                                <label
-                                                    htmlFor={taskId}
-                                                    className="text-sm font-medium leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                                >
-                                                    {item}
-                                                </label>
-                                            </div>
-                                        )
-                                    })}
+                        if (items.length > 0) {
+                            return (
+                                <div key={key}>
+                                    <h3 className="text-xl font-semibold mb-2">{formatKeyToTitle(key)}</h3>
+                                    <div className="space-y-2">
+                                        {items.map((item, index) => {
+                                            const taskId = `${key}-${index}`;
+                                            return (
+                                                <div key={taskId} className="flex items-center space-x-3">
+                                                    <Checkbox
+                                                        id={taskId}
+                                                        checked={completedTasks.has(item)}
+                                                        onCheckedChange={(checked) => handleTaskToggle(item, !!checked)}
+                                                        disabled={dataLoading}
+                                                        aria-label={item}
+                                                    />
+                                                    <label
+                                                        htmlFor={taskId}
+                                                        className="text-sm font-medium leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                    >
+                                                        {item}
+                                                    </label>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
                                 </div>
+                            );
+                        }
+                        return null;
+                    })}
+                </CardContent>
+            </Card>
+        </div>
+
+        {/* Right Column: Supplementary Info */}
+        <div className="lg:w-1/2 space-y-6 mt-6 lg:mt-0">
+            {breakdownText && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl">What's Happening In Your Body</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                        <p className="text-muted-foreground whitespace-pre-wrap">{breakdownText}</p>
+                    </CardContent>
+                </Card>
+            )}
+
+            {dailyTips && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl">Daily Tips for Success</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6 space-y-6">
+                        {dailyTips.preparation && dailyTips.preparation.length > 0 && (
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">Preparation</h3>
+                                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                                    {dailyTips.preparation.map((tip, index) => (
+                                        <li key={`prep-${index}`}>{tip}</li>
+                                    ))}
+                                </ul>
                             </div>
-                        );
-                    }
-                    return null;
-                })}
-            </CardContent>
-        </Card>
-
-        {breakdownText && (
-             <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl">What's Happening In Your Body</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-6">
-                    <p className="text-muted-foreground whitespace-pre-wrap">{breakdownText}</p>
-                </CardContent>
-            </Card>
-        )}
-
-        {dailyTips && (
-             <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl">Daily Tips for Success</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-6 space-y-6">
-                    {dailyTips.preparation && dailyTips.preparation.length > 0 && (
-                        <div>
-                            <h3 className="text-xl font-semibold mb-2">Preparation</h3>
-                            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                                {dailyTips.preparation.map((tip, index) => (
-                                    <li key={`prep-${index}`}>{tip}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                    {dailyTips.winterComfort && dailyTips.winterComfort.length > 0 && (
-                        <div>
-                            <h3 className="text-xl font-semibold mb-2">Winter Comfort</h3>
-                            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                                {dailyTips.winterComfort.map((tip, index) => (
-                                    <li key={`comfort-${index}`}>{tip}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
-        )}
-
+                        )}
+                        {dailyTips.winterComfort && dailyTips.winterComfort.length > 0 && (
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">Winter Comfort</h3>
+                                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                                    {dailyTips.winterComfort.map((tip, index) => (
+                                        <li key={`comfort-${index}`}>{tip}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
+        </div>
       </div>
     );
   }
@@ -348,7 +353,7 @@ export function DashboardClient() {
     <div className="flex flex-col flex-1">
       <UserHeader />
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="w-full max-w-4xl mx-auto">
+        <div className="w-full max-w-7xl mx-auto">
            <div className="mb-8 flex justify-center">
             <ScrollArea className="whitespace-nowrap">
               <div className="p-1 bg-muted rounded-lg flex w-max gap-1">
