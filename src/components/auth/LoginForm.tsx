@@ -193,7 +193,7 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm md:max-w-md">
       <CardHeader className="text-center">
         <Link href="/" aria-label="Home" className="mx-auto"><Logo /></Link>
         <CardTitle className="text-2xl font-headline">{getTitle()}</CardTitle>
@@ -310,4 +310,3 @@ export function LoginForm() {
     </Card>
   );
 }
-
