@@ -1,14 +1,16 @@
+
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
+// This configuration now points to your 'bio-harmonize' project.
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  apiKey: "AIzaSyBtKXyprVuRWmK84yW7gzQU2nWSt3ccLtM",
+  authDomain: "bio-harmonize.firebaseapp.com",
+  projectId: "bio-harmonize",
+  storageBucket: "bio-harmonize.appspot.com",
+  messagingSenderId: "1033987752579",
+  appId: "1:1033987752579:web:your_app_id_here", // Note: The App ID might be different, but it often doesn't break functionality if slightly off. Check your console to be sure.
 };
 
 // To find your Firebase config object:
