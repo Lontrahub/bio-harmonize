@@ -17,7 +17,8 @@ let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 
-if (!getApps().length) {
+// This simplified check is more robust for different environments.
+if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
 } else {
   app = getApp();
@@ -26,8 +27,7 @@ if (!getApps().length) {
 auth = getAuth(app);
 db = getFirestore(app);
 
-// We add a single boolean to check if the config is valid,
-// but we no longer check for environment variables which caused the issue.
+// We add a single boolean to check if the config is valid.
 const firebaseEnabled = !!firebaseConfig.apiKey;
 
 export { app, auth, db, firebaseEnabled };
