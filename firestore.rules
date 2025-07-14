@@ -4,58 +4,50 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // Helper function to check if a user is authenticated
-    function isAuthenticated() {
+    function isSignedIn() {
       return request.auth != null;
     }
 
+    // Helper function to get user data
+    function getUserData(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data;
+    }
+
     // Helper function to check if a user is an admin
-    // It reads the user's role from their own profile document
-    function isAdmin() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    function isAdmin(userId) {
+      return getUserData(userId).role == 'admin';
     }
 
     // Rules for the 'users' collection
     match /users/{userId} {
-      // Allow a user to create their own profile document
-      allow create: if request.auth.uid == userId;
+      // Admins can read any user profile
+      // A user can read their own profile
+      allow read: if isSignedIn() && (isAdmin(request.auth.uid) || request.auth.uid == userId);
       
-      // Allow a user to read their own document
-      // Allow an admin to read any user's document
-      allow read: if request.auth.uid == userId || isAdmin();
-      
-      // Allow a user to update their own document
-      allow update: if request.auth.uid == userId;
+      // A user can update their own profile
+      // An admin can update any user profile
+      allow update: if isSignedIn() && (isAdmin(request.auth.uid) || request.auth.uid == userId);
 
-      // Generally, don't allow users to delete their own accounts from the client.
-      // This should be handled by a backend function if needed.
-      allow delete: if false;
+      // Only authenticated users can create their own profile document
+      allow create: if isSignedIn() && request.auth.uid == userId;
     }
 
     // Rules for the 'userProgress' collection
     match /userProgress/{progressId} {
-      // Allow a user to create their own progress entries
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      
-      // Allow an admin to read any progress entry
-      allow read: if isAdmin();
-      
-      // Don't allow updates, as progress is additive
-      allow update: if false;
+      // Admins can read any progress
+      // Users can read their own progress
+      allow read: if isSignedIn() && (isAdmin(request.auth.uid) || resource.data.userId == request.auth.uid);
 
-      // Allow a user to delete their own progress entries (e.g., unchecking a box)
-      allow delete: if isAuthenticated() && get(path(resource.path)).data.userId == request.auth.uid;
+      // Users can create and delete their own progress documents
+      allow create, delete: if isSignedIn() && request.resource.data.userId == request.auth.uid;
     }
 
-    // Rules for the 'cleanseContent' collection (recipes, shopping lists, etc.)
-    // This content is considered public to all authenticated users.
+    // Rules for the 'cleanseContent' collection (public-read)
     match /cleanseContent/{document=**} {
-      // Allow any authenticated user to read the content
-      allow read: if isAuthenticated();
-      
-      // Only admins should be able to write/update content.
-      // For simplicity, we'll disallow all writes from the client.
-      // This content should be managed from the Firebase Console or a trusted backend.
-      allow write: if false;
+      // Any authenticated user can read the cleanse content
+      allow read: if isSignedIn();
+      // Only admins can write/update cleanse content
+      allow write: if isSignedIn() && isAdmin(request.auth.uid);
     }
   }
 }
