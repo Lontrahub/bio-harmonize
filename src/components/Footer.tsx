@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Youtube, Linkedin, Instagram, Globe } from 'lucide-react';
 import { Logo } from './Logo';
@@ -10,10 +11,10 @@ export function Footer() {
           
           {/* Left Column: Social Icons. On mobile, this will be second. */}
           <div className="flex justify-center md:justify-start gap-4 order-2 md:order-1">
-            <Link href="#" aria-label="YouTube"><Youtube className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" /></Link>
-            <Link href="#" aria-label="LinkedIn"><Linkedin className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" /></Link>
-            <Link href="#" aria-label="Instagram"><Instagram className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" /></Link>
-            <Link href="#" aria-label="Website"><Globe className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" /></Link>
+            <Link href="https://www.youtube.com/@junglejoe3334" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><Youtube className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" /></Link>
+            <Link href="https://za.linkedin.com/in/joe-van-niekerk-18678a341" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><Linkedin className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" /></Link>
+            <Link href="https://www.instagram.com/junglejoe333/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" /></Link>
+            <Link href="https://www.joevanniekerk.com" target="_blank" rel="noopener noreferrer" aria-label="Website"><Globe className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" /></Link>
           </div>
 
           {/* Center Column: Logo and Tagline. On mobile, this will be first. */}
