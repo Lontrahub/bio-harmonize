@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/Logo";
 import { ExternalLink } from "lucide-react";
 import { UserHeader } from "@/components/UserHeader";
+import { cn } from "@/lib/utils";
 
 interface ResourceLink {
   title: string;
@@ -94,7 +95,7 @@ export function ResourcesClient() {
         <div className="w-full max-w-4xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-3xl">Helpful Resources</CardTitle>
+                    <CardTitle className="font-headline text-3xl font-bold">Helpful Resources</CardTitle>
                     <CardDescription>A collection of external links to support your journey.</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6">
@@ -106,10 +107,10 @@ export function ResourcesClient() {
                                         href={link.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-3 p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
+                                        className="group flex items-center gap-3 p-4 rounded-lg border bg-card hover:bg-card hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
                                     >
-                                        <span className="flex-1 font-medium text-primary">{link.title}</span>
-                                        <ExternalLink className="h-5 w-5 text-muted-foreground" />
+                                        <span className="flex-1 font-medium text-primary group-hover:text-accent-foreground">{link.title}</span>
+                                        <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-accent-foreground transition-colors" />
                                     </a>
                                 </li>
                             ))}
