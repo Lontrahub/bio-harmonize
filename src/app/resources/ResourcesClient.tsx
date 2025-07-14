@@ -11,22 +11,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/Logo";
 import { ExternalLink } from "lucide-react";
 import { UserHeader } from "@/components/UserHeader";
-import { cn } from "@/lib/utils";
 
 interface ResourceLink {
   title: string;
   url: string;
 }
 
-interface ResourcesData {
-  externalLinks?: ResourceLink[];
+interface ResourcesDocument {
+  [key: string]: ResourceLink[];
 }
+
 
 export function ResourcesClient() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
-  const [resources, setResources] = useState<ResourcesData | null>(null);
+  const [allResources, setAllResources] = useState<ResourceLink[]>([]);
   const [loadingResources, setLoadingResources] = useState(true);
 
   useEffect(() => {
@@ -46,9 +46,11 @@ export function ResourcesClient() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setResources(docSnap.data() as ResourcesData);
+          const data = docSnap.data() as ResourcesDocument;
+          const combinedLinks = Object.values(data).flat();
+          setAllResources(combinedLinks);
         } else {
-          setResources(null);
+          setAllResources([]);
         }
       } catch (error) {
         console.error("Error fetching resources:", error);
@@ -99,18 +101,18 @@ export function ResourcesClient() {
                     <CardDescription>A collection of external links to support your journey.</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6">
-                    {resources && resources.externalLinks && resources.externalLinks.length > 0 ? (
+                    {allResources.length > 0 ? (
                         <ul className="space-y-3">
-                            {resources.externalLinks.map((link, index) => (
+                            {allResources.map((link, index) => (
                                 <li key={index}>
                                     <a
                                         href={link.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="group flex items-center gap-3 p-4 rounded-lg border bg-card hover:bg-card hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
+                                        className="group flex items-center gap-3 p-4 rounded-lg border bg-card hover:bg-muted/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
                                     >
-                                        <span className="flex-1 font-medium text-primary group-hover:text-accent-foreground">{link.title}</span>
-                                        <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-accent-foreground transition-colors" />
+                                        <span className="flex-1 font-medium text-primary group-hover:text-accent">{link.title}</span>
+                                        <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-accent transition-colors" />
                                     </a>
                                 </li>
                             ))}
