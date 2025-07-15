@@ -12,7 +12,7 @@ const firebaseConfig = {
   projectId: "bio-harmonize",
   storageBucket: "bio-harmonize.appspot.com",
   messagingSenderId: "1057863583626",
-  appId: "1:1057863583626:web:10c14b13bf1f016f40c765",
+  appId: "1:1033987752579:web:1a46641cc285034d1e11b6",
 };
 
 let app: FirebaseApp;
