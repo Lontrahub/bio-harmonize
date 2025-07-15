@@ -3,21 +3,22 @@ import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
-// This configuration is for your "bio-harmonize" project.
+// Hardcoded Firebase configuration for the "bio-harmonize" project.
+// This is necessary for the App Hosting environment, which does not use .env files.
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  apiKey: "YOUR_API_KEY",
+  authDomain: "bio-harmonize.firebaseapp.com",
+  projectId: "bio-harmonize",
+  storageBucket: "bio-harmonize.appspot.com",
+  messagingSenderId: "1057863583626",
+  appId: "1:1057863583626:web:10c14b13bf1f016f40c765",
 };
 
 let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 
-// This simplified check is more robust for different environments.
+// Robust initialization check for all environments.
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
 } else {
@@ -27,7 +28,7 @@ if (getApps().length === 0) {
 auth = getAuth(app);
 db = getFirestore(app);
 
-// We add a single boolean to check if the config is valid.
-const firebaseEnabled = !!firebaseConfig.apiKey;
+// We confirm Firebase is enabled by checking if the config has a projectId.
+const firebaseEnabled = !!firebaseConfig.projectId;
 
 export { app, auth, db, firebaseEnabled };
