@@ -3,10 +3,11 @@ import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
-// Hardcoded Firebase configuration for the "bio-harmonize" project.
-// This is necessary for the App Hosting environment, which does not use .env files.
+// This is the correct and robust way to initialize Firebase.
+// It uses a hardcoded configuration which is necessary for the App Hosting environment.
+// It avoids any dependency on .env files, which was the source of previous issues.
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyBtKXyprVuRWmK84yW7gzQU2nWSt3ccLtM",
   authDomain: "bio-harmonize.firebaseapp.com",
   projectId: "bio-harmonize",
   storageBucket: "bio-harmonize.appspot.com",
@@ -18,8 +19,8 @@ let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 
-// Robust initialization check for all environments.
-if (getApps().length === 0) {
+// This check prevents re-initializing the app on every hot-reload in development.
+if (!getApps().length) {
   app = initializeApp(firebaseConfig);
 } else {
   app = getApp();
@@ -28,7 +29,7 @@ if (getApps().length === 0) {
 auth = getAuth(app);
 db = getFirestore(app);
 
-// We confirm Firebase is enabled by checking if the config has a projectId.
+// We define firebaseEnabled based on whether the projectId is present in the config.
 const firebaseEnabled = !!firebaseConfig.projectId;
 
 export { app, auth, db, firebaseEnabled };
