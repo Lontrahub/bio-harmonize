@@ -86,7 +86,6 @@ export function LoginForm() {
         });
         if (user) {
           const userRef = doc(db, "users", user.uid);
-          // Use setDoc without merge to create a new user document
           await setDoc(userRef, {
             uid: user.uid,
             email: user.email,
@@ -140,8 +139,8 @@ export function LoginForm() {
         const userRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(userRef);
 
-        // If user is new (document doesn't exist), create it.
         if (!docSnap.exists()) {
+          // If it's a new user, create their profile document in Firestore
           await setDoc(userRef, {
             uid: user.uid,
             email: user.email,
@@ -150,7 +149,7 @@ export function LoginForm() {
             role: "user",
           });
         }
-        // If user already exists, their profile is already in the db, no action needed on login.
+        // If the user already exists, we just log them in. No need to update the doc.
       }
       toast({ title: "Success", description: "You've been signed in with Google." });
       router.push("/dashboard");
