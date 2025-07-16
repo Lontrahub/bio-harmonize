@@ -18,15 +18,14 @@ import {
   UserCredential,
   updateProfile,
 } from "firebase/auth";
-import { auth, firebaseEnabled } from "@/lib/firebase";
+import { auth, db, firebaseEnabled } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -72,7 +71,7 @@ export function LoginForm() {
   });
 
   const onSubmit = async (values: z.infer<typeof signupSchema | typeof loginSchema>) => {
-    if (!auth) return;
+    if (!auth || !db) return;
     setLoading(true);
     try {
       if (authAction === "signup") {
@@ -85,15 +84,15 @@ export function LoginForm() {
         await updateProfile(user, {
           displayName: values.fullName,
         });
-        if (user && db) {
+        if (user) {
           const userRef = doc(db, "users", user.uid);
           await setDoc(userRef, {
             uid: user.uid,
             email: user.email,
             displayName: values.fullName,
-            createdAt: new Date(),
+            createdAt: serverTimestamp(),
             role: "user",
-          });
+          }, { merge: true }); // Use merge to avoid overwriting existing data if any
         }
         toast({ title: "Success", description: "Your account has been created." });
         router.push("/dashboard");
@@ -135,21 +134,23 @@ export function LoginForm() {
       const provider = new GoogleAuthProvider();
       const userCredential: UserCredential = await signInWithPopup(auth, provider);
       const user = userCredential.user;
+      
       if (user) {
         const userRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(userRef);
 
         if (!docSnap.exists()) {
-          // If the user document doesn't exist, create it with the 'user' role.
+          // If the user document doesn't exist, create it.
           await setDoc(userRef, {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
-            createdAt: new Date(),
-            role: "user",
+            createdAt: serverTimestamp(),
+            role: "user", // Assign 'user' role by default
           });
         } else {
-           // If it exists, merge the data to update displayName without overwriting the role.
+           // If it exists, merge the latest displayName just in case it changed.
+           // This won't overwrite the role or other fields.
            await setDoc(userRef, {
               displayName: user.displayName,
            }, { merge: true });
