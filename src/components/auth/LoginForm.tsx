@@ -86,13 +86,14 @@ export function LoginForm() {
         });
         if (user) {
           const userRef = doc(db, "users", user.uid);
+          // Use setDoc without merge to create a new user document
           await setDoc(userRef, {
             uid: user.uid,
             email: user.email,
             displayName: values.fullName,
             createdAt: serverTimestamp(),
             role: "user",
-          }, { merge: true }); // Use merge to avoid overwriting existing data if any
+          });
         }
         toast({ title: "Success", description: "Your account has been created." });
         router.push("/dashboard");
@@ -139,22 +140,17 @@ export function LoginForm() {
         const userRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(userRef);
 
+        // If user is new (document doesn't exist), create it.
         if (!docSnap.exists()) {
-          // If the user document doesn't exist, create it.
           await setDoc(userRef, {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
             createdAt: serverTimestamp(),
-            role: "user", // Assign 'user' role by default
+            role: "user",
           });
-        } else {
-           // If it exists, merge the latest displayName just in case it changed.
-           // This won't overwrite the role or other fields.
-           await setDoc(userRef, {
-              displayName: user.displayName,
-           }, { merge: true });
         }
+        // If user already exists, their profile is already in the db, no action needed on login.
       }
       toast({ title: "Success", description: "You've been signed in with Google." });
       router.push("/dashboard");
