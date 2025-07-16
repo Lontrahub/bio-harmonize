@@ -11,7 +11,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Urbanist', 'sans-serif'],
-        headline: ['Cal Sans', 'sans-serif'],
+        headline: ['"Cal Sans"', 'Urbanist', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
