@@ -247,7 +247,7 @@ export function DashboardClient() {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-3xl">Content Not Available</CardTitle>
+                    <CardTitle className="font-headline text-3xl tracking-wide">Content Not Available</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6">
                     <p className="text-muted-foreground">The content for this day could not be loaded. Please try again later.</p>
@@ -273,7 +273,7 @@ export function DashboardClient() {
         <div className="lg:w-1/2 flex-shrink-0">
            <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-3xl">Day {selectedDay}{dailyPlan.title ? `: ${dailyPlan.title}` : ''}</CardTitle>
+                    <CardTitle className="font-headline text-3xl tracking-wide">Day {selectedDay}{dailyPlan.title ? `: ${dailyPlan.title}` : ''}</CardTitle>
                     <CardDescription>Your daily protocol to feel your best.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6 pt-6">
@@ -327,7 +327,7 @@ export function DashboardClient() {
             {breakdownText && (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="font-headline text-2xl">What's Happening In Your Body</CardTitle>
+                        <CardTitle className="font-headline text-2xl tracking-wide">What's Happening In Your Body</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-6">
                         <p className="text-muted-foreground whitespace-pre-wrap">{breakdownText}</p>
@@ -338,7 +338,7 @@ export function DashboardClient() {
             {dailyTips && (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="font-headline text-2xl">Daily Tips for Success</CardTitle>
+                        <CardTitle className="font-headline text-2xl tracking-wide">Daily Tips for Success</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-6 space-y-6">
                         {dailyTips.preparation && dailyTips.preparation.length > 0 && (

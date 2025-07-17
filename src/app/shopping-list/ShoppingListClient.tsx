@@ -194,7 +194,7 @@ export function ShoppingListClient() {
         <div className="w-full max-w-4xl mx-auto">
           <Card>
             <CardHeader>
-                <CardTitle className="font-headline text-3xl">Shopping List</CardTitle>
+                <CardTitle className="font-headline text-3xl tracking-wide">Shopping List</CardTitle>
                 <CardDescription>Your guide to the essentials for the cleanse, plus your own personal items.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-8 pt-6">

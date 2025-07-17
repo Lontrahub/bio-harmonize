@@ -105,7 +105,7 @@ export function RecipesClient() {
         <div className="w-full max-w-4xl mx-auto space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-3xl">Cleanse Recipes</CardTitle>
+                    <CardTitle className="font-headline text-3xl tracking-wide">Cleanse Recipes</CardTitle>
                     <CardDescription>Delicious and healing recipes to support you through the cleanse.</CardDescription>
                 </CardHeader>
             </Card>
@@ -116,7 +116,7 @@ export function RecipesClient() {
                     return (
                         <Card key={index}>
                             <CardHeader>
-                                <CardTitle className="font-headline text-2xl text-primary">{recipe.title}</CardTitle>
+                                <CardTitle className="font-headline text-2xl text-primary tracking-wide">{recipe.title}</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 {ingredientKeys.length > 0 && (

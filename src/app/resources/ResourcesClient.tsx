@@ -97,7 +97,7 @@ export function ResourcesClient() {
         <div className="w-full max-w-4xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-3xl font-bold">Helpful Resources</CardTitle>
+                    <CardTitle className="font-headline text-3xl tracking-wide">Helpful Resources</CardTitle>
                     <CardDescription>A collection of external links to support your journey.</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6">

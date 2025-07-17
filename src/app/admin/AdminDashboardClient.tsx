@@ -210,7 +210,7 @@ export function AdminDashboardClient() {
         <div className="w-full max-w-4xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline text-3xl">Admin Dashboard</CardTitle>
+              <CardTitle className="font-headline text-3xl tracking-wide">Admin Dashboard</CardTitle>
               <CardDescription>Manage users and view site activity. Click a user to see their progress.</CardDescription>
             </CardHeader>
             <CardContent>
