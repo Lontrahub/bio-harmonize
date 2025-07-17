@@ -14,6 +14,7 @@ import { Logo } from "@/components/Logo";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { UserHeader } from "@/components/UserHeader";
+import { CheckCircle2 } from "lucide-react";
 
 interface DailyPlan {
   title?: string;
@@ -101,7 +102,8 @@ export function AdminDashboardClient() {
     protocolKeys.forEach(key => {
         const content = dayData[key];
         if (typeof content === 'string' && content.trim() !== '') {
-            total += content.split(' OR ').map(item => item.trim()).length;
+            items = content.split(' OR ').map(item => item.trim());
+            total += items.length;
         } else if (Array.isArray(content)) {
             total += content.length;
         }
@@ -130,12 +132,16 @@ export function AdminDashboardClient() {
                             const completedTasks = userProgress.filter(p => p.dayNumber === day);
                             const totalTasks = dailyProtocols ? getTotalTasksForDay(dailyProtocols[dayKey]) : 0;
                             const completionPercentage = totalTasks > 0 ? (completedTasks.length / totalTasks) * 100 : 0;
+                            const isDayComplete = totalTasks > 0 && completedTasks.length === totalTasks;
 
                             return (
                                 <AccordionItem value={`day-${day}`} key={day}>
                                     <AccordionTrigger>
                                         <div className="flex justify-between items-center w-full pr-4">
-                                            <span>Day {day}</span>
+                                            <div className="flex items-center gap-2">
+                                                {isDayComplete && <CheckCircle2 className="h-5 w-5 text-green-500" />}
+                                                <span>Day {day}</span>
+                                            </div>
                                             <span className="text-sm text-muted-foreground">
                                                 {completedTasks.length} / {totalTasks} tasks completed
                                             </span>
