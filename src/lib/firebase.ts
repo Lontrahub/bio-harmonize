@@ -5,14 +5,13 @@ import { getFirestore, type Firestore } from "firebase/firestore";
 
 // This is the correct and robust way to initialize Firebase.
 // It uses a hardcoded configuration which is necessary for the App Hosting environment.
-// It avoids any dependency on .env files, which was the source of previous issues.
 const firebaseConfig = {
   apiKey: "AIzaSyBtKXyprVuRWmK84yW7gzQU2nWSt3ccLtM",
   authDomain: "bio-harmonize.firebaseapp.com",
   projectId: "bio-harmonize",
   storageBucket: "bio-harmonize.appspot.com",
-  messagingSenderId: "1057863583626",
-  appId: "1:1033987752579:web:1a46641cc285034d1e11b6",
+  messagingSenderId: "1033987752579",
+  appId: "1:1033987752579:web:1a46641cc285034d1e11b6"
 };
 
 let app: FirebaseApp;
