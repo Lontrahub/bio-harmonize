@@ -32,6 +32,17 @@ interface DailyTips {
   winterComfort: string[];
 }
 
+// Define the desired order of protocol keys
+const protocolOrder = [
+    "morning_routine",
+    "breakfast",
+    "mid_morning",
+    "lunch",
+    "afternoon_snack",
+    "dinner",
+    "evening"
+];
+
 export function DashboardClient() {
   const { user, userProfile, loading } = useAuth();
   const router = useRouter();
@@ -245,7 +256,16 @@ export function DashboardClient() {
         )
     }
 
-    const protocolKeys = Object.keys(dailyPlan).filter(key => key !== 'title');
+    const protocolKeys = Object.keys(dailyPlan)
+      .filter(key => key !== 'title' && dailyPlan[key] && (Array.isArray(dailyPlan[key]) ? (dailyPlan[key] as string[]).length > 0 : dailyPlan[key] !== ''))
+      .sort((a, b) => {
+        const indexA = protocolOrder.indexOf(a);
+        const indexB = protocolOrder.indexOf(b);
+        // If a key is not in protocolOrder, push it to the end
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+      });
 
     return (
       <div className="flex flex-col lg:flex-row lg:gap-8">
