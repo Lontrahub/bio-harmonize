@@ -102,7 +102,7 @@ export function AdminDashboardClient() {
     protocolKeys.forEach(key => {
         const content = dayData[key];
         if (typeof content === 'string' && content.trim() !== '') {
-            items = content.split(' OR ').map(item => item.trim());
+            const items = content.split(' OR ').map(item => item.trim());
             total += items.length;
         } else if (Array.isArray(content)) {
             total += content.length;
