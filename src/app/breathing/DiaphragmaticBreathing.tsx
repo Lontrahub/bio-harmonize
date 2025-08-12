@@ -107,8 +107,8 @@ export function DiaphragmaticBreathing() {
 
   return (
     <div className="flex flex-col items-center gap-8">
-       <audio ref={timerAudioRef} src={timerSound} preload="auto" />
-       <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />
+       {timerSound && <audio ref={timerAudioRef} src={timerSound} preload="auto" />}
+       {backgroundSound && <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />}
       <div className="w-full h-64 flex flex-col items-center justify-center bg-muted rounded-lg text-center p-4">
         <h3 className="text-xl font-headline tracking-wide mb-2">Instructions</h3>
         <p className="text-muted-foreground mb-4">

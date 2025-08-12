@@ -125,8 +125,8 @@ export function BoxBreathing() {
           .animate-box-exhale { animation: box-exhale ${duration}s linear forwards; }
           .animate-box-hold-empty { animation: box-hold-empty ${duration}s linear forwards; }
       `}</style>
-      <audio ref={timerAudioRef} src={timerSound} preload="auto" />
-      <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />
+      {timerSound && <audio ref={timerAudioRef} src={timerSound} preload="auto" />}
+      {backgroundSound && <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />}
       <div className="w-64 h-64 flex items-center justify-center bg-muted rounded-lg">
         <div 
           key={stepIndex}

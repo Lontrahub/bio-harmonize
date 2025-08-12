@@ -158,8 +158,8 @@ export function FourSevenEightBreathing() {
           .animate-circle-hold { animation: circle-hold 7s linear forwards; }
           .animate-circle-exhale { animation: circle-exhale 8s ease-in forwards; }
       `}</style>
-       <audio ref={timerAudioRef} src={timerSound} preload="auto" />
-       <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />
+       {timerSound && <audio ref={timerAudioRef} src={timerSound} preload="auto" />}
+       {backgroundSound && <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />}
       <div className="w-64 h-64 flex items-center justify-center bg-muted rounded-full">
         <div 
            key={`${currentCycle}-${step}`}
