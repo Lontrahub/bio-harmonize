@@ -111,7 +111,7 @@ export function UserHeader() {
     return (
         <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             {/* Left Side: Nav */}
-            <div className="flex items-center gap-2 w-1/3">
+            <div className="flex items-center justify-start gap-2 w-1/3">
                  {/* Mobile Navigation Trigger */}
                 <div className="md:hidden">
                     <Sheet>
@@ -152,12 +152,14 @@ export function UserHeader() {
             
             {/* Center: Main Toggle */}
             <div className="flex items-center justify-center w-1/3">
-                <Button variant={isCleanseRoute ? 'default' : 'outline'} size="sm" asChild>
-                    <Link href="/dashboard"><Leaf className="mr-2 h-4 w-4" /> Cleanse</Link>
-                </Button>
-                <Button variant={isBreathingRoute ? 'default' : 'outline'} size="sm" asChild>
-                    <Link href="/breathing"><HeartPulse className="mr-2 h-4 w-4" /> Breathing</Link>
-                </Button>
+                 <div className="flex items-center gap-1 rounded-lg border bg-muted p-1">
+                    <Button variant={isCleanseRoute ? 'default' : 'ghost'} size="sm" asChild>
+                        <Link href="/dashboard"><Leaf className="mr-2 h-4 w-4" /> Cleanse</Link>
+                    </Button>
+                    <Button variant={isBreathingRoute ? 'default' : 'ghost'} size="sm" asChild>
+                        <Link href="/breathing"><HeartPulse className="mr-2 h-4 w-4" /> Breathing</Link>
+                    </Button>
+                </div>
             </div>
             
             {/* Right Side: Actions & Logo */}
