@@ -41,9 +41,6 @@ export function BoxBreathing() {
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isRunning) {
-      if (timerAudioRef.current) {
-        timerAudioRef.current.play().catch(console.error);
-      }
       if (backgroundAudioRef.current && backgroundSound && backgroundSound !== 'none') {
         backgroundAudioRef.current.play().catch(console.error);
       }
@@ -51,6 +48,7 @@ export function BoxBreathing() {
         setStepIndex((prev) => {
             const nextIndex = (prev + 1) % 4;
             if (timerAudioRef.current) {
+                timerAudioRef.current.currentTime = 0;
                 timerAudioRef.current.play().catch(console.error);
             }
             return nextIndex;
@@ -82,6 +80,12 @@ export function BoxBreathing() {
   }, [backgroundVolume]);
 
   const handleStartPause = () => {
+    if (!isRunning) {
+        // Play sound on start to get browser permission
+        if (timerAudioRef.current) {
+            timerAudioRef.current.play().catch(console.error);
+        }
+    }
     setIsRunning(!isRunning);
   };
 

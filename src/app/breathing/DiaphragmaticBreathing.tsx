@@ -80,10 +80,7 @@ export function DiaphragmaticBreathing() {
 
   const handleStartPause = () => {
      if (timeLeft <= 0) {
-        setTimeLeft(sessionLength);
-        if (backgroundAudioRef.current) {
-            backgroundAudioRef.current.currentTime = 0;
-        }
+        handleReset();
      }
      if (!isRunning && timerAudioRef.current) {
         timerAudioRef.current.play().catch(console.error);

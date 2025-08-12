@@ -68,7 +68,8 @@ export function FourSevenEightBreathing() {
         setStep(current.step as "Inhale" | "Hold" | "Exhale");
         
         if (timerAudioRef.current) {
-          timerAudioRef.current.play().catch(console.error);
+            timerAudioRef.current.currentTime = 0;
+            timerAudioRef.current.play().catch(console.error);
         }
 
         timeoutRef.current = setTimeout(() => {
@@ -88,14 +89,10 @@ export function FourSevenEightBreathing() {
         }, current.duration);
     };
     
-    // This part ensures we start the sequence from the beginning of a cycle
-    if(step === "Inhale"){
-      runStep();
+    if (step === "Inhale" && currentCycle === 0) {
+      // Don't auto-run on first load, wait for user click
     } else {
-      // If paused mid-cycle, we need to handle resuming correctly.
-      // For now, let's simplify and just restart the cycle. A more complex implementation
-      // could save the exact timing, but that adds considerable complexity.
-      // The current implementation will restart the whole multi-step process.
+        runStep();
     }
 
 
@@ -106,7 +103,7 @@ export function FourSevenEightBreathing() {
         }
     }
 
-  }, [isRunning, cycles, currentCycle, backgroundSound]);
+  }, [isRunning, cycles, currentCycle, backgroundSound, step]);
 
   useEffect(() => {
     if (timerAudioRef.current) timerAudioRef.current.volume = timerVolume;
@@ -122,11 +119,11 @@ export function FourSevenEightBreathing() {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
     } else {
         if (currentCycle >= cycles) {
-            setCurrentCycle(0);
-            setStep("Inhale");
-             if (backgroundAudioRef.current) {
-                backgroundAudioRef.current.currentTime = 0;
-            }
+            handleReset();
+        }
+        // Play sound on start to get browser permission
+        if (timerAudioRef.current) {
+            timerAudioRef.current.play().catch(console.error);
         }
         setIsRunning(true);
     }
@@ -201,7 +198,7 @@ export function FourSevenEightBreathing() {
         <div className="flex justify-center gap-4">
           <Button onClick={handleStartPause} size="lg">
             {isRunning ? <Pause className="mr-2" /> : <Play className="mr-2" />}
-            {isRunning ? "Pause" : "Start"}
+            {isRunning ? "Pause" : (currentCycle >= cycles ? "Start Over" : "Start")}
           </Button>
           <Button onClick={handleReset} variant="outline" size="lg">
             <RotateCcw className="mr-2"/>
