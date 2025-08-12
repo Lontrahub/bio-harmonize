@@ -3,13 +3,13 @@
 
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
-import { LayoutDashboard, ShoppingCart, Utensils, BookMarked, Shield, LogOut, Menu } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Utensils, BookMarked, Shield, LogOut, Menu, Leaf, HeartPulse } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -18,10 +18,12 @@ import {
 } from "@/components/ui/tooltip";
 import { ThemeToggle } from "./ThemeToggle";
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 
 export function UserHeader() {
     const { userProfile } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
     const { toast } = useToast();
 
     const handleSignOut = async () => {
@@ -46,40 +48,99 @@ export function UserHeader() {
         }
     };
 
-    const navItems = [
-        { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
-        { href: "/shopping-list", label: "Shopping List", icon: ShoppingCart, adminOnly: false },
-        { href: "/recipes", label: "Recipes", icon: Utensils, adminOnly: false },
-        { href: "/resources", label: "Resources", icon: BookMarked, adminOnly: false },
-        { href: "/admin", label: "Admin Dashboard", icon: Shield, adminOnly: true }
+    const cleanseNavItems = [
+        { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+        { href: "/shopping-list", label: "Shopping List", icon: ShoppingCart },
+        { href: "/recipes", label: "Recipes", icon: Utensils },
+        { href: "/resources", label: "Resources", icon: BookMarked },
     ];
+
+    const adminNavItem = { href: "/admin", label: "Admin Dashboard", icon: Shield, adminOnly: true };
+
+    const isCleanseRoute = cleanseNavItems.some(item => pathname.startsWith(item.href)) || pathname.startsWith('/admin');
+    const isBreathingRoute = pathname.startsWith('/breathing');
+
+    const renderNavLinks = (isMobile = false) => {
+      const Wrapper = isMobile ? SheetClose : React.Fragment;
+      const buttonProps = isMobile 
+        ? { variant: "ghost", className: "w-full justify-start gap-3 text-base" } 
+        : { variant: "outline", size: "icon" };
+      
+      return (
+         <>
+          {isCleanseRoute && cleanseNavItems.map(item => (
+            <Wrapper key={item.href} {...(isMobile && {asChild: true})}>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button {...buttonProps} asChild>
+                      <Link href={item.href} aria-label={item.label}>
+                        <item.icon className="h-5 w-5" />
+                        {isMobile && item.label}
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  {!isMobile && <TooltipContent><p>{item.label}</p></TooltipContent>}
+                </Tooltip>
+              </TooltipProvider>
+            </Wrapper>
+          ))}
+
+          {userProfile?.role === 'admin' && (
+            <Wrapper {...(isMobile && {asChild: true})}>
+               <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button {...buttonProps} asChild>
+                      <Link href={adminNavItem.href} aria-label={adminNavItem.label}>
+                        <adminNavItem.icon className="h-5 w-5" />
+                        {isMobile && adminNavItem.label}
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  {!isMobile && <TooltipContent><p>{adminNavItem.label}</p></TooltipContent>}
+                </Tooltip>
+              </TooltipProvider>
+            </Wrapper>
+          )}
+         </>
+      )
+    };
+
 
     return (
         <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-2">
-                <TooltipProvider>
-                    {navItems.filter(item => !item.adminOnly || userProfile?.role === 'admin').map(item => (
-                        <Tooltip key={item.href}>
-                            <TooltipTrigger asChild>
-                                <Button variant="outline" size="icon" asChild>
-                                    <Link href={item.href} aria-label={item.label}><item.icon className="h-5 w-5" /></Link>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent><p>{item.label}</p></TooltipContent>
-                        </Tooltip>
-                    ))}
-                    <ThemeToggle />
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="outline" size="icon" onClick={handleSignOut} aria-label="Sign Out">
-                                <LogOut className="h-5 w-5" />
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent><p>Sign Out</p></TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            </nav>
+            <div className="hidden md:flex items-center gap-2">
+                {renderNavLinks(false)}
+            </div>
+
+            {/* Main Mode Toggle */}
+             <div className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+                <Button variant={isCleanseRoute ? 'default' : 'outline'} size="sm" asChild>
+                    <Link href="/dashboard"><Leaf className="mr-2 h-4 w-4" /> Cleanse</Link>
+                </Button>
+                <Button variant={isBreathingRoute ? 'default' : 'outline'} size="sm" asChild>
+                    <Link href="/breathing"><HeartPulse className="mr-2 h-4 w-4" /> Breathing</Link>
+                </Button>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className="hidden md:flex">
+                <ThemeToggle />
+              </div>
+              <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="outline" size="icon" onClick={handleSignOut} aria-label="Sign Out" className="hidden md:inline-flex">
+                            <LogOut className="h-5 w-5" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p>Sign Out</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+
 
              {/* Mobile Navigation Trigger */}
             <div className="md:hidden">
@@ -98,16 +159,7 @@ export function UserHeader() {
                            </SheetClose>
                         </SheetHeader>
                         <nav className="flex-1 space-y-1 p-4">
-                            {navItems.filter(item => !item.adminOnly || userProfile?.role === 'admin').map(item => (
-                                <SheetClose asChild key={item.href}>
-                                    <Button variant="ghost" className="w-full justify-start gap-3 text-base" asChild>
-                                      <Link href={item.href}>
-                                        <item.icon className="h-5 w-5" />
-                                        {item.label}
-                                      </Link>
-                                    </Button>
-                                </SheetClose>
-                            ))}
+                           {renderNavLinks(true)}
                         </nav>
                         <div className="space-y-4 border-t p-4">
                             <div className="flex items-center justify-between">
@@ -123,8 +175,10 @@ export function UserHeader() {
                 </Sheet>
             </div>
             
-            {/* Logo */}
-            <Logo />
+            {/* Logo on Right for Desktop */}
+            <div className="hidden md:flex">
+                <Logo />
+            </div>
         </header>
     );
 }
