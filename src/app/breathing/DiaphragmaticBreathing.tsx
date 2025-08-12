@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -11,10 +11,14 @@ export function DiaphragmaticBreathing() {
   const [sessionLength, setSessionLength] = useState(300); // 5 minutes in seconds
   const [timeLeft, setTimeLeft] = useState(sessionLength);
   const [isRunning, setIsRunning] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (!isRunning || timeLeft <= 0) {
-      if (timeLeft <= 0) setIsRunning(false);
+      if (timeLeft <= 0 && isRunning) {
+         if (audioRef.current) audioRef.current.play().catch(console.error);
+         setIsRunning(false);
+      }
       return;
     }
 
@@ -33,6 +37,9 @@ export function DiaphragmaticBreathing() {
      if (timeLeft <= 0) {
         setTimeLeft(sessionLength);
      }
+     if (!isRunning && audioRef.current) {
+        audioRef.current.play().catch(console.error);
+     }
     setIsRunning(!isRunning);
   };
 
@@ -49,6 +56,7 @@ export function DiaphragmaticBreathing() {
 
   return (
     <div className="flex flex-col items-center gap-8">
+       <audio ref={audioRef} src="https://cdn.freesound.org/previews/26/26414_32267-lq.mp3" preload="auto" />
       <div className="w-full h-64 flex flex-col items-center justify-center bg-muted rounded-lg text-center p-4">
         <h3 className="text-xl font-headline tracking-wide mb-2">Instructions</h3>
         <p className="text-muted-foreground mb-4">
@@ -63,7 +71,7 @@ export function DiaphragmaticBreathing() {
       </div>
       <div className="text-center">
         <p className="text-6xl font-bold tracking-wider mb-2 font-mono">{formatTime(timeLeft)}</p>
-        <p className="text-xl text-muted-foreground">{isRunning ? 'Breathe...' : 'Session Paused'}</p>
+        <p className="text-xl text-muted-foreground">{timeLeft <=0 ? "Session Complete" : (isRunning ? 'Breathe...' : 'Session Paused')}</p>
       </div>
       <div className="w-full max-w-xs space-y-6">
         <div className="grid gap-4">
@@ -91,7 +99,7 @@ export function DiaphragmaticBreathing() {
         <div className="flex justify-center gap-4">
           <Button onClick={handleStartPause} size="lg">
             {isRunning ? <Pause className="mr-2" /> : <Play className="mr-2" />}
-            {isRunning ? "Pause" : (timeLeft <= 0 ? "Start" : "Resume")}
+            {isRunning ? "Pause" : (timeLeft <= 0 ? "Start Over" : "Resume")}
           </Button>
           <Button onClick={handleReset} variant="outline" size="lg">
             <RotateCcw className="mr-2"/>

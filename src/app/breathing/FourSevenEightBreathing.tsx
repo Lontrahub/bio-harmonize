@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,10 +12,13 @@ export function FourSevenEightBreathing() {
   const [currentCycle, setCurrentCycle] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [step, setStep] = useState<"Inhale" | "Hold" | "Exhale">("Inhale");
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
     if (!isRunning || currentCycle >= cycles) {
-      setIsRunning(false);
+      if (currentCycle >= cycles) setIsRunning(false);
       return;
     }
 
@@ -31,24 +34,30 @@ export function FourSevenEightBreathing() {
         const current = sequence[currentStepIndex];
         setStep(current.step as "Inhale" | "Hold" | "Exhale");
         
-        setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.play().catch(console.error);
+        }
+
+        timeoutId = setTimeout(() => {
             currentStepIndex++;
             if (currentStepIndex < sequence.length) {
                 runStep();
             } else {
                 if (currentCycle + 1 < cycles) {
                    setCurrentCycle(c => c + 1);
-                   // Restart cycle
                    currentStepIndex = 0;
                    runStep();
                 } else {
-                    setIsRunning(false); // All cycles complete
+                    setCurrentCycle(c => c + 1);
+                    setIsRunning(false);
                 }
             }
         }, current.duration);
     };
 
     runStep();
+
+    return () => clearTimeout(timeoutId);
 
   }, [isRunning, cycles, currentCycle]);
 
@@ -59,6 +68,7 @@ export function FourSevenEightBreathing() {
     } else {
         if (currentCycle >= cycles) {
             setCurrentCycle(0);
+            setStep("Inhale");
         }
         setIsRunning(true);
     }
@@ -97,6 +107,7 @@ export function FourSevenEightBreathing() {
           .animate-circle-hold { animation: circle-hold 7s linear forwards; }
           .animate-circle-exhale { animation: circle-exhale 8s ease-in forwards; }
       `}</style>
+       <audio ref={audioRef} src="https://cdn.freesound.org/previews/26/26414_32267-lq.mp3" preload="auto" />
       <div className="w-64 h-64 flex items-center justify-center bg-muted rounded-full">
         <div 
            key={`${currentCycle}-${step}`}
@@ -106,7 +117,9 @@ export function FourSevenEightBreathing() {
       </div>
       <div className="text-center">
         <p className="text-5xl font-bold tracking-wider mb-2">{isRunning ? step : "Ready?"}</p>
-        <p className="text-xl text-muted-foreground">Cycle {currentCycle + 1} of {cycles}</p>
+        <p className="text-xl text-muted-foreground">
+          {currentCycle >= cycles ? `Completed ${cycles} cycles` : `Cycle ${currentCycle + 1} of ${cycles}`}
+        </p>
       </div>
       <div className="w-full max-w-xs space-y-4">
         <div className="grid gap-2">
@@ -136,4 +149,3 @@ export function FourSevenEightBreathing() {
     </div>
   );
 }
-

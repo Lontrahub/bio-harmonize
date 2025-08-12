@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
@@ -12,14 +12,25 @@ export function BoxBreathing() {
   const [isRunning, setIsRunning] = useState(false);
   const [step, setStep] = useState<"Inhale" | "Hold" | "Exhale" | "Hold ">("Inhale");
   const [stepIndex, setStepIndex] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const steps = ["Inhale", "Hold", "Exhale", "Hold "];
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isRunning) {
+      // Play sound at the beginning of the first step
+      if (audioRef.current && stepIndex === 0) {
+        audioRef.current.play().catch(console.error);
+      }
       timer = setInterval(() => {
-        setStepIndex((prev) => (prev + 1) % 4);
+        setStepIndex((prev) => {
+            const nextIndex = (prev + 1) % 4;
+            if (audioRef.current) {
+                audioRef.current.play().catch(console.error);
+            }
+            return nextIndex;
+        });
       }, duration * 1000);
     }
     return () => clearInterval(timer);
@@ -70,6 +81,7 @@ export function BoxBreathing() {
           .animate-box-exhale { animation: box-exhale ${duration}s linear forwards; }
           .animate-box-hold-empty { animation: box-hold-empty ${duration}s linear forwards; }
       `}</style>
+      <audio ref={audioRef} src="https://cdn.freesound.org/previews/26/26414_32267-lq.mp3" preload="auto" />
       <div className="w-64 h-64 flex items-center justify-center bg-muted rounded-lg">
         <div 
           key={stepIndex}
