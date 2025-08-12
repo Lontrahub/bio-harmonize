@@ -16,7 +16,7 @@ const timerSounds = [
 ];
 
 const backgroundSounds = [
-    { id: 'none', name: 'None', url: '' },
+    { id: 'none', name: 'None', url: 'none' },
     { id: 'rain', name: 'Rain', url: 'https://cdn.freesound.org/previews/34/34372_234433-lq.mp3' },
     { id: 'forest', name: 'Forest', url: 'https://cdn.freesound.org/previews/17/17395_33256-lq.mp3' },
     { id: 'waves', name: 'Waves', url: 'https://cdn.freesound.org/previews/61/61252_44788-lq.mp3' },
@@ -44,7 +44,7 @@ export function BoxBreathing() {
       if (timerAudioRef.current) {
         timerAudioRef.current.play().catch(console.error);
       }
-      if (backgroundAudioRef.current && backgroundSound) {
+      if (backgroundAudioRef.current && backgroundSound && backgroundSound !== 'none') {
         backgroundAudioRef.current.play().catch(console.error);
       }
       timer = setInterval(() => {
@@ -126,7 +126,7 @@ export function BoxBreathing() {
           .animate-box-hold-empty { animation: box-hold-empty ${duration}s linear forwards; }
       `}</style>
       {timerSound && <audio ref={timerAudioRef} src={timerSound} preload="auto" />}
-      {backgroundSound && <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />}
+      {backgroundSound && backgroundSound !== 'none' && <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />}
       <div className="w-64 h-64 flex items-center justify-center bg-muted rounded-lg">
         <div 
           key={stepIndex}

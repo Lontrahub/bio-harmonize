@@ -18,7 +18,7 @@ const timerSounds = [
 ];
 
 const backgroundSounds = [
-    { id: 'none', name: 'None', url: '' },
+    { id: 'none', name: 'None', url: 'none' },
     { id: 'rain', name: 'Rain', url: 'https://cdn.freesound.org/previews/34/34372_234433-lq.mp3' },
     { id: 'forest', name: 'Forest', url: 'https://cdn.freesound.org/previews/17/17395_33256-lq.mp3' },
     { id: 'waves', name: 'Waves', url: 'https://cdn.freesound.org/previews/61/61252_44788-lq.mp3' },
@@ -50,7 +50,7 @@ export function DiaphragmaticBreathing() {
       return;
     }
     
-    if (backgroundAudioRef.current && backgroundSound) {
+    if (backgroundAudioRef.current && backgroundSound && backgroundSound !== 'none') {
         backgroundAudioRef.current.play().catch(console.error);
     }
 
@@ -108,7 +108,7 @@ export function DiaphragmaticBreathing() {
   return (
     <div className="flex flex-col items-center gap-8">
        {timerSound && <audio ref={timerAudioRef} src={timerSound} preload="auto" />}
-       {backgroundSound && <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />}
+       {backgroundSound && backgroundSound !== 'none' && <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />}
       <div className="w-full h-64 flex flex-col items-center justify-center bg-muted rounded-lg text-center p-4">
         <h3 className="text-xl font-headline tracking-wide mb-2">Instructions</h3>
         <p className="text-muted-foreground mb-4">
