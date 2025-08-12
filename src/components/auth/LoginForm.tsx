@@ -92,7 +92,7 @@ export function LoginForm() {
             displayName: values.fullName,
             createdAt: serverTimestamp(),
             role: "user",
-          });
+          }, { merge: true }); // Use merge to avoid overwriting existing data if any
         }
         toast({ title: "Success", description: "Your account has been created." });
         router.push("/dashboard");
@@ -140,16 +140,21 @@ export function LoginForm() {
         const docSnap = await getDoc(userRef);
 
         if (!docSnap.exists()) {
-          // If it's a new user, create their profile document in Firestore
+          // If the user document doesn't exist, create it.
           await setDoc(userRef, {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
             createdAt: serverTimestamp(),
-            role: "user",
+            role: "user", // Assign 'user' role by default
           });
+        } else {
+           // If it exists, merge the latest displayName just in case it changed.
+           // This won't overwrite the role or other fields.
+           await setDoc(userRef, {
+              displayName: user.displayName,
+           }, { merge: true });
         }
-        // If the user already exists, we just log them in. No need to update the doc.
       }
       toast({ title: "Success", description: "You've been signed in with Google." });
       router.push("/dashboard");
