@@ -6,39 +6,80 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Play, Pause, RotateCcw } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+const timerSounds = [
+    { id: 'bell1', name: 'Bell 1', url: 'https://cdn.freesound.org/previews/26/26414_32267-lq.mp3' },
+    { id: 'bell2', name: 'Bell 2', url: 'https://cdn.freesound.org/previews/142/142808_215957-lq.mp3' },
+    { id: 'bell3', name: 'Bell 3', url: 'https://cdn.freesound.org/previews/352/352694_5121236-lq.mp3' },
+];
+
+const backgroundSounds = [
+    { id: 'none', name: 'None', url: '' },
+    { id: 'rain', name: 'Rain', url: 'https://cdn.freesound.org/previews/34/34372_234433-lq.mp3' },
+    { id: 'forest', name: 'Forest', url: 'https://cdn.freesound.org/previews/17/17395_33256-lq.mp3' },
+    { id: 'waves', name: 'Waves', url: 'https://cdn.freesound.org/previews/61/61252_44788-lq.mp3' },
+];
 
 export function BoxBreathing() {
   const [duration, setDuration] = useState(4);
   const [isRunning, setIsRunning] = useState(false);
   const [step, setStep] = useState<"Inhale" | "Hold" | "Exhale" | "Hold ">("Inhale");
   const [stepIndex, setStepIndex] = useState(0);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  
+  const timerAudioRef = useRef<HTMLAudioElement>(null);
+  const backgroundAudioRef = useRef<HTMLAudioElement>(null);
+
+  const [timerSound, setTimerSound] = useState(timerSounds[0].url);
+  const [backgroundSound, setBackgroundSound] = useState(backgroundSounds[0].url);
+  const [timerVolume, setTimerVolume] = useState(0.5);
+  const [backgroundVolume, setBackgroundVolume] = useState(0.2);
 
   const steps = ["Inhale", "Hold", "Exhale", "Hold "];
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isRunning) {
-      // Play sound at the beginning of the first step
-      if (audioRef.current && stepIndex === 0) {
-        audioRef.current.play().catch(console.error);
+      if (timerAudioRef.current) {
+        timerAudioRef.current.play().catch(console.error);
+      }
+      if (backgroundAudioRef.current && backgroundSound) {
+        backgroundAudioRef.current.play().catch(console.error);
       }
       timer = setInterval(() => {
         setStepIndex((prev) => {
             const nextIndex = (prev + 1) % 4;
-            if (audioRef.current) {
-                audioRef.current.play().catch(console.error);
+            if (timerAudioRef.current) {
+                timerAudioRef.current.play().catch(console.error);
             }
             return nextIndex;
         });
       }, duration * 1000);
+    } else {
+       if (backgroundAudioRef.current) {
+        backgroundAudioRef.current.pause();
+      }
     }
-    return () => clearInterval(timer);
-  }, [isRunning, duration]);
+    return () => {
+        clearInterval(timer);
+        if (backgroundAudioRef.current) {
+            backgroundAudioRef.current.pause();
+        }
+    };
+  }, [isRunning, duration, backgroundSound]);
 
   useEffect(() => {
     setStep(steps[stepIndex] as "Inhale" | "Hold" | "Exhale" | "Hold ");
   }, [stepIndex]);
+
+  useEffect(() => {
+    if (timerAudioRef.current) timerAudioRef.current.volume = timerVolume;
+  }, [timerVolume]);
+
+  useEffect(() => {
+    if (backgroundAudioRef.current) backgroundAudioRef.current.volume = backgroundVolume;
+  }, [backgroundVolume]);
 
   const handleStartPause = () => {
     setIsRunning(!isRunning);
@@ -47,6 +88,9 @@ export function BoxBreathing() {
   const handleReset = () => {
     setIsRunning(false);
     setStepIndex(0);
+    if (backgroundAudioRef.current) {
+        backgroundAudioRef.current.currentTime = 0;
+    }
   };
   
   const getAnimationClass = () => {
@@ -81,7 +125,8 @@ export function BoxBreathing() {
           .animate-box-exhale { animation: box-exhale ${duration}s linear forwards; }
           .animate-box-hold-empty { animation: box-hold-empty ${duration}s linear forwards; }
       `}</style>
-      <audio ref={audioRef} src="https://cdn.freesound.org/previews/26/26414_32267-lq.mp3" preload="auto" />
+      <audio ref={timerAudioRef} src={timerSound} preload="auto" />
+      <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />
       <div className="w-64 h-64 flex items-center justify-center bg-muted rounded-lg">
         <div 
           key={stepIndex}
@@ -117,6 +162,48 @@ export function BoxBreathing() {
           </Button>
         </div>
       </div>
+
+       <Card className="w-full max-w-sm mt-4">
+        <CardHeader>
+          <CardTitle className="text-lg">Sound Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+            <div className="grid gap-2">
+              <Label>Timer Sound</Label>
+              <Select onValueChange={setTimerSound} defaultValue={timerSound} disabled={isRunning}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                      {timerSounds.map(sound => (
+                          <SelectItem key={sound.id} value={sound.url}>{sound.name}</SelectItem>
+                      ))}
+                  </SelectContent>
+              </Select>
+               <Slider
+                    value={[timerVolume]}
+                    onValueChange={(value) => setTimerVolume(value[0])}
+                    max={1}
+                    step={0.05}
+                />
+            </div>
+             <div className="grid gap-2">
+              <Label>Background Sound</Label>
+              <Select onValueChange={setBackgroundSound} defaultValue={backgroundSound} disabled={isRunning}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                      {backgroundSounds.map(sound => (
+                          <SelectItem key={sound.id} value={sound.url}>{sound.name}</SelectItem>
+                      ))}
+                  </SelectContent>
+              </Select>
+               <Slider
+                    value={[backgroundVolume]}
+                    onValueChange={(value) => setBackgroundVolume(value[0])}
+                    max={1}
+                    step={0.05}
+                />
+            </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

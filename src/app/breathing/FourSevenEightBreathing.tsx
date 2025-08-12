@@ -6,20 +6,53 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Play, Pause, RotateCcw } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+const timerSounds = [
+    { id: 'bell1', name: 'Bell 1', url: 'https://cdn.freesound.org/previews/26/26414_32267-lq.mp3' },
+    { id: 'bell2', name: 'Bell 2', url: 'https://cdn.freesound.org/previews/142/142808_215957-lq.mp3' },
+    { id: 'bell3', name: 'Bell 3', url: 'https://cdn.freesound.org/previews/352/352694_5121236-lq.mp3' },
+];
+
+const backgroundSounds = [
+    { id: 'none', name: 'None', url: '' },
+    { id: 'rain', name: 'Rain', url: 'https://cdn.freesound.org/previews/34/34372_234433-lq.mp3' },
+    { id: 'forest', name: 'Forest', url: 'https://cdn.freesound.org/previews/17/17395_33256-lq.mp3' },
+    { id: 'waves', name: 'Waves', url: 'https://cdn.freesound.org/previews/61/61252_44788-lq.mp3' },
+];
+
 
 export function FourSevenEightBreathing() {
   const [cycles, setCycles] = useState(4);
   const [currentCycle, setCurrentCycle] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [step, setStep] = useState<"Inhale" | "Hold" | "Exhale">("Inhale");
-  const audioRef = useRef<HTMLAudioElement>(null);
+  
+  const timerAudioRef = useRef<HTMLAudioElement>(null);
+  const backgroundAudioRef = useRef<HTMLAudioElement>(null);
+
+  const [timerSound, setTimerSound] = useState(timerSounds[0].url);
+  const [backgroundSound, setBackgroundSound] = useState(backgroundSounds[0].url);
+  const [timerVolume, setTimerVolume] = useState(0.5);
+  const [backgroundVolume, setBackgroundVolume] = useState(0.2);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
     if (!isRunning || currentCycle >= cycles) {
-      if (currentCycle >= cycles) setIsRunning(false);
+      if (currentCycle >= cycles) {
+        setIsRunning(false);
+      }
+       if (backgroundAudioRef.current) {
+        backgroundAudioRef.current.pause();
+      }
       return;
+    }
+    
+    if (backgroundAudioRef.current && backgroundSound) {
+        backgroundAudioRef.current.play().catch(console.error);
     }
 
     const sequence = [
@@ -34,8 +67,8 @@ export function FourSevenEightBreathing() {
         const current = sequence[currentStepIndex];
         setStep(current.step as "Inhale" | "Hold" | "Exhale");
         
-        if (audioRef.current) {
-          audioRef.current.play().catch(console.error);
+        if (timerAudioRef.current) {
+          timerAudioRef.current.play().catch(console.error);
         }
 
         timeoutId = setTimeout(() => {
@@ -57,10 +90,22 @@ export function FourSevenEightBreathing() {
 
     runStep();
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+        clearTimeout(timeoutId);
+        if (backgroundAudioRef.current) {
+            backgroundAudioRef.current.pause();
+        }
+    }
 
-  }, [isRunning, cycles, currentCycle]);
+  }, [isRunning, cycles, currentCycle, backgroundSound]);
 
+  useEffect(() => {
+    if (timerAudioRef.current) timerAudioRef.current.volume = timerVolume;
+  }, [timerVolume]);
+
+  useEffect(() => {
+    if (backgroundAudioRef.current) backgroundAudioRef.current.volume = backgroundVolume;
+  }, [backgroundVolume]);
 
   const handleStartPause = () => {
     if (isRunning) {
@@ -69,6 +114,9 @@ export function FourSevenEightBreathing() {
         if (currentCycle >= cycles) {
             setCurrentCycle(0);
             setStep("Inhale");
+             if (backgroundAudioRef.current) {
+                backgroundAudioRef.current.currentTime = 0;
+            }
         }
         setIsRunning(true);
     }
@@ -78,6 +126,9 @@ export function FourSevenEightBreathing() {
     setIsRunning(false);
     setCurrentCycle(0);
     setStep("Inhale");
+    if (backgroundAudioRef.current) {
+        backgroundAudioRef.current.currentTime = 0;
+    }
   };
   
   const getAnimationClass = () => {
@@ -107,7 +158,8 @@ export function FourSevenEightBreathing() {
           .animate-circle-hold { animation: circle-hold 7s linear forwards; }
           .animate-circle-exhale { animation: circle-exhale 8s ease-in forwards; }
       `}</style>
-       <audio ref={audioRef} src="https://cdn.freesound.org/previews/26/26414_32267-lq.mp3" preload="auto" />
+       <audio ref={timerAudioRef} src={timerSound} preload="auto" />
+       <audio ref={backgroundAudioRef} src={backgroundSound} preload="auto" loop />
       <div className="w-64 h-64 flex items-center justify-center bg-muted rounded-full">
         <div 
            key={`${currentCycle}-${step}`}
@@ -146,6 +198,48 @@ export function FourSevenEightBreathing() {
           </Button>
         </div>
       </div>
+      
+       <Card className="w-full max-w-sm mt-4">
+        <CardHeader>
+          <CardTitle className="text-lg">Sound Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+            <div className="grid gap-2">
+              <Label>Timer Sound</Label>
+              <Select onValueChange={setTimerSound} defaultValue={timerSound} disabled={isRunning}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                      {timerSounds.map(sound => (
+                          <SelectItem key={sound.id} value={sound.url}>{sound.name}</SelectItem>
+                      ))}
+                  </SelectContent>
+              </Select>
+               <Slider
+                    value={[timerVolume]}
+                    onValueChange={(value) => setTimerVolume(value[0])}
+                    max={1}
+                    step={0.05}
+                />
+            </div>
+             <div className="grid gap-2">
+              <Label>Background Sound</Label>
+              <Select onValueChange={setBackgroundSound} defaultValue={backgroundSound} disabled={isRunning}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                      {backgroundSounds.map(sound => (
+                          <SelectItem key={sound.id} value={sound.url}>{sound.name}</SelectItem>
+                      ))}
+                  </SelectContent>
+              </Select>
+               <Slider
+                    value={[backgroundVolume]}
+                    onValueChange={(value) => setBackgroundVolume(value[0])}
+                    max={1}
+                    step={0.05}
+                />
+            </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
