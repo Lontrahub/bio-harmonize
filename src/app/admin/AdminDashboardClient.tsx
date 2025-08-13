@@ -102,7 +102,11 @@ export function AdminDashboardClient() {
     protocolKeys.forEach(key => {
         const content = dayData[key];
         if (typeof content === 'string' && content.trim() !== '') {
+<<<<<<< HEAD
             const items = content.split(' OR ').map(item => item.trim());
+=======
+            items = content.split(' OR ').map(item => item.trim());
+>>>>>>> 66f46c8 (in the admin dashboard when you complete the total of task for each day)
             total += items.length;
         } else if (Array.isArray(content)) {
             total += content.length;
